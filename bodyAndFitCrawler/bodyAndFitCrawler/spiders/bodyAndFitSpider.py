@@ -2,6 +2,7 @@
 import scrapy, re
 from scrapy.exceptions import CloseSpider
 from scrapy.http import Request
+from scrapy_splash import SplashRequest
 from bs4 import BeautifulSoup
 
 from bodyAndFitCrawler.items import BodyandfitcrawlerItem
@@ -11,153 +12,197 @@ from bodyAndFitCrawler.items import BodyandfitcrawlerItem
 #
 # Execute shell: scrapy shell "<url>"
 #
+# Execute splash renderer: docker run -p 8050:8050 scrapinghub/splash
+#
 
 #
 # TODO:
-# - Follow pagination to next sites
-# - Add more categories
 # - Add dynamic rendered content
 # - Add products to database
 #
+
 
 class BodyandfitspiderSpider(scrapy.Spider):
     # Unique spider name
     name = 'bodyAndFitSpider'
 
-    # All urls to scrape
-    # First url: milchproteine
-    start_urls = ['https://www.bodyandfit.com/de-de/Produkte/Protein/Milchproteine/c/2']
+    # Start url
+    start_urls = ['https://www.bodyandfit.com/de-de']
+
+    # basic url
+    url = "https://www.bodyandfit.com"
 
     # Current page for pagination
     page = 0
-    
+
+    # Allowed categories
+    allowed = ['Protein', 'Sportnahrung', 'Food & Snacks', 'Abnehmen', 'Gesundheit']
+
     # Parse method invoked by scrapy
     def parse(self, response):
 
+        # Categories from navbar
+        main_categories = response.xpath('//li[contains(@class, "mega-nav__category-list-item") '
+                                         'and contains(@class, "mega-nav__primary-category")]')
+
+        # Check if categories available
+        if not main_categories:
+            raise CloseSpider('No more categories')
+
+        # Iterate each category
+        for main_category in main_categories:
+
+            main_category_name = main_category.xpath('./div/a').extract()
+            main_category_name = self.clean_text(self.parse_text(self.list_to_str(main_category_name)))
+
+            if main_category_name in self.allowed:
+
+                sub_categories = main_category.xpath('.//li[contains(@class, "mega-nav__category-list-item") '
+                                                     'and not(contains(@class, "mega-nav__primary-category"))]')
+
+                for sub_category in sub_categories:
+
+                    category_page = sub_category.xpath('./div/a/@href').get()
+
+                    if category_page:
+                        url = self.url + category_page
+                        self.page = 0
+                        yield SplashRequest(url=url, callback=self.parse_category, endpoint='render.html')
+
+    # Parse category
+    def parse_category(self, response):
         # Products on product list page
         products = response.xpath('//article[@class="product-slab"]')
 
         # Check if products available
         if not products:
-            raise CloseSpider("No more products!")
+            return
 
         # Iterate each product on site
         for product in products:
 
-            # Item containing product information
+            # item per product
             item = BodyandfitcrawlerItem()
 
-            # All information available on product page
-            name = product.xpath('.//div[@class="product-slab__wrapper"]/div[@class="product-slab__title"]').extract()
-            name = self.cleanText(self.parseText(self.listToStr(name)))
-
-            imageUrl = product.xpath('.//a[@class="product-slab__gallery"]').extract()
-            imageUrl = self.cleanText(self.parseImg(self.listToStr(imageUrl)))
-
-            description_short = product.xpath('.//div[@class="product-slab__wrapper"]/'
-                                              'div[@class="product-slab__information"]').extract()
-            description_short = self.cleanText(self.parseText(self.listToStr(description_short)))
-
-            # Store information per item
-            item['name'] = ''.join(name).strip()
-            item['imageUrl'] = ''.join(imageUrl).strip()
-            item['description_short'] = ''.join(description_short).strip()
+            # store product information in item
+            self.parse_product(response, product, item)
 
             # Follow each product on its detail page
             detail_page = product.xpath('.//a[@class="product-slab__gallery"]/@href').get()
-            if detail_page is not None:
-                yield response.follow(detail_page, callback=self.parseItemDetail, meta={'item': item})
+            if detail_page:
+                url = self.url + detail_page
+                yield SplashRequest(url=url, callback=self.parse_item_detail, endpoint='render.html',
+                                    meta={'item': item})
 
-        # Follow paginiation to next sites
+        # Follow pagination to next sites
         self.page += 1
         next_page_url = response.request.url + "?text=%%3Arelevance%%3A&page=%d" % self.page
-        yield Request(url=next_page_url, callback=self.parse)
+        yield SplashRequest(url=next_page_url, callback=self.parse_category, endpoint='render.html')
 
+    def parse_product(self, response, product, item):
+        small_image_url = product.xpath('.//a[@class="product-slab__gallery"]').extract()
+        small_image_url = self.clean_text(self.parse_img(self.list_to_str(small_image_url)))
+
+        description_short = product.xpath('.//div[@class="product-slab__wrapper"]/'
+                                          'div[@class="product-slab__information"]').extract()
+        description_short = self.clean_text(self.parse_text(self.list_to_str(description_short)))
+
+        category = response.xpath('//h1[contains(@class, "heading--large")]').extract()
+        category = self.clean_text(self.parse_text(self.list_to_str(category)))
+
+        item['small_image_url'] = ''.join(small_image_url).strip()
+        item['description_short'] = ''.join(description_short).strip()
+        item['category'] = ''.join(category).strip()
+
+        return item
 
     # Parse item detail
-    def parseItemDetail(self, response):
+    def parse_item_detail(self, response):
 
         item = response.meta['item']
 
-        # All information available on product page
-        description_long = response.xpath('//h2[@class="product-overview__info-header"]').extract()
-        description_long = self.cleanText(self.parseText((self.listToStr(description_long))))
+        large_image_url = response.xpath('//*[contains(@class, "amp-slide")]').extract()
+        large_image_url = self.clean_text(self.parse_img(self.list_to_str(large_image_url)))
 
-        naehrwert = response.xpath('//section[@id="tabNutrition"]').extract()
-        naehrwert = self.cleanText(self.parseImg((self.listToStr(naehrwert))))
+        name = response.xpath('//*[contains(@class, "product-details__name")]').extract()
+        name = self.clean_text(self.parse_text(self.list_to_str(name)))
 
-        ''' Dynamically rendered
+        description_long = response.xpath('//*[contains(@class, "product-overview__info-text")]').extract()
+        description_long = self.clean_text(self.parse_text(self.list_to_str(description_long)))
+
+        nutrition = response.xpath('//section[@id="tabNutrition"]').extract()
+        nutrition = self.clean_text(self.parse_img(self.list_to_str(nutrition)))
+
         size_to_price = response.xpath('//select[@id="variant-selector-primary"]').extract()
-        size_to_price = self.cleanText(self.parseSelect((self.listToStr(size_to_price))))
-        geschmack = response.xpath('//select[@id="variant-selector-secondary"]').extract()
-        geschmack = self.cleanText(self.parseSelect((self.listToStr(geschmack))))
-        size_to_price_to_geschmack = 
-        '''
 
-        # Store information per item
+        if not size_to_price:
+            sizes = response.xpath('//*[contains(@class, "variant-selector__selector")]').extract()
+            sizes = self.clean_text(self.parse_text(self.list_to_str(sizes)))
+            prices = response.xpath('//*[contains(@class, "variant-selector__price")]').extract()
+            prices = self.clean_text(self.parse_text(self.list_to_str(prices)))
+            flavours = 'Neutral'
+        else:
+            size_to_price = self.clean_text(self.parse_select(self.list_to_str(size_to_price)))
+            sizes, prices = self.get_sizes_and_prices_from_select(size_to_price)
+            flavours = response.xpath('//select[@id="variant-selector-secondary"]').extract()
+            flavours = self.clean_text(self.parse_select(self.list_to_str(flavours)))
+
+        item['name'] = ''.join(name).strip()
+        item['large_img_url'] = ''.join().strip()
         item['description_long'] = ''.join(description_long).strip()
-        item['naehrwert'] = ''.join(naehrwert).strip()
-        # item['size_to_price_to_geschmack'] = ''.join(size_to_price).strip()
+        item['nutrition'] = ''.join(nutrition).strip()
+        item['allergens'] = ''.join(nutrition).strip()  # Allergens are stored in nutrition picture
+        item['sizes'] = ''.join(sizes).strip()
+        item['prices'] = ''.join(prices).strip()
+        item['flavours'] = ''.join(flavours).strip()
 
         yield item
 
     # Returns all strings in list
-    def listToStr(self, MyList):
-        dumm = ""
-        for i in MyList: dumm = "{0}{1}".format(dumm, i)
-        return dumm
+    @staticmethod
+    def list_to_str(my_list):
+        dummy = ""
+        for i in my_list:
+            dummy = "{0}{1}".format(dummy, i)
+        return dummy
 
     # Parses text from html element
     # Example: <a>Some Text</a> => Some Text
-    def parseText(self, str):
-        soup = BeautifulSoup(str, 'html.parser')
+    @staticmethod
+    def parse_text(string):
+        soup = BeautifulSoup(string, 'html.parser')
         return re.sub(" +|\n|\r|\t|\0|\x0b|\xa0", ' ', soup.get_text()).strip()
 
     # Parses img src from html elements
     # Example: <img src="/some/path"> => /some/path
-    def parseImg(self, str):
-        soup = BeautifulSoup(str, 'html.parser')
+    @staticmethod
+    def parse_img(string):
+        soup = BeautifulSoup(string, 'html.parser')
         images = soup.find_all('img')
         for img in images:
             return img['src']
 
-    def parseSelect(self, str):
-        soup = BeautifulSoup(str, 'html.parser')
+    # Parses text from options from select element
+    @staticmethod
+    def parse_select(string):
+        soup = BeautifulSoup(string, 'html.parser')
         return [str(x.text) for x in soup.find_all('option')]
 
     # Cleans extracted information
-    def cleanText(self, text):
+    @staticmethod
+    def clean_text(text):
         soup = BeautifulSoup(text, 'html.parser')
-        text = soup.get_text();
+        text = soup.get_text()
         text = re.sub("( +|\n|\r|\t|\0|\x0b|\xa0|\xbb|\xab)+", ' ', text).strip()
         return text
 
-    # Creates json with matching of sizes to prices to flavours
-    #
-    # Example Output:
-    # [{
-    #   "size": 750g,
-    #   "price": 6.5€,
-    #   "flavours": [banana, schoko, vanilla]
-    # }]
-    #
-    # Size_to_Price: [X_1 gramm (Y_1 shakes): Z_1€, X_2 gramm (Y_2 shakes): Z_2€]
-    def splitSizesAndPrices(self, size_to_price, flavours):
-
-        i = 0
-        output = []
-        unified = {}
-
-        for sizePrice in size_to_price:
-
-            size = sizePrice.split(" ")[0]  # X
-            price = sizePrice.split(" ")[4]  # Z
-
-            unified["size"] = size
-            unified["price"] = price
-            unified["flavours"] = flavours[i]
-
-            output.append(unified)
-            i += 1
-
-        return output
+    # Extracts sizes and prices from size to price string
+    # Input list of following string types: 750 gram (26  shakes): 12,50 €
+    @staticmethod
+    def get_sizes_and_prices_from_select(size_to_price):
+        sizes = []
+        prices = []
+        for size_price in size_to_price:
+            sizes.append(size_price.split(" ")[0])
+            prices.append(size_price.split(" ")[4])
+        return sizes, prices
