@@ -11,11 +11,10 @@ import scrapy
 class BodyandfitcrawlerItem(scrapy.Item):
     id = scrapy.Field()
     name = scrapy.Field()
-    price = scrapy.Field()
+    size_to_price_to_geschmack = scrapy.Field()
     description_short = scrapy.Field()
     description_long = scrapy.Field()
     imageUrl = scrapy.Field()
-    geschmack = scrapy.Field()
     allergene = scrapy.Field()
     popularity = scrapy.Field()
     naehrwert = scrapy.Field()
