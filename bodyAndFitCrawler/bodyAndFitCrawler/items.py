@@ -20,3 +20,4 @@ class BodyandfitcrawlerItem(scrapy.Item):
     prices = scrapy.Field()
     sizes = scrapy.Field()
     small_image_url = scrapy.Field()
+    url = scrapy.Field()

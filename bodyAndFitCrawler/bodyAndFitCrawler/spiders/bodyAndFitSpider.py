@@ -3,6 +3,9 @@ import scrapy, re
 from scrapy.exceptions import CloseSpider
 from scrapy.http import Request
 from scrapy_splash import SplashRequest
+from scrapy.utils.response import open_in_browser
+from scrapy.http.response.html import HtmlResponse
+from scrapy.shell import inspect_response
 from bs4 import BeautifulSoup
 
 from bodyAndFitCrawler.items import BodyandfitcrawlerItem
@@ -10,15 +13,13 @@ from bodyAndFitCrawler.items import BodyandfitcrawlerItem
 #
 # Execute crawler: scrapy crawl bodyAndFitSpider -o bodyAndFit.json
 #
+# Execute shell with scrapy splash: scrapy shell "http://localhost:8050/render.html?url=<url>"
+#
 # Execute shell: scrapy shell "<url>"
 #
-# Execute splash renderer: docker run -p 8050:8050 scrapinghub/splash
+# Execute splash renderer: docker run -p 8050:8050 scrapinghub/splash --max-timeout 3600
 #
-
-#
-# TODO:
-# - Add dynamic rendered content
-# - Add products to database
+# docker stop xenodochial_northcutt
 #
 
 
@@ -27,7 +28,7 @@ class BodyandfitspiderSpider(scrapy.Spider):
     name = 'bodyAndFitSpider'
 
     # Start url
-    start_urls = ['https://www.bodyandfit.com/de-de']
+    start_urls = ['https://www.bodyandfit.com/de-de/Produkte/Protein/Milchproteine/c/2']
 
     # basic url
     url = "https://www.bodyandfit.com"
@@ -38,8 +39,27 @@ class BodyandfitspiderSpider(scrapy.Spider):
     # Allowed categories
     allowed = ['Protein', 'Sportnahrung', 'Food & Snacks', 'Abnehmen', 'Gesundheit']
 
-    # Parse method invoked by scrapy
-    def parse(self, response):
+    # Lua script for splash
+    lua_script = """
+        function main(splash)
+            assert(splash:go(splash.args.url))
+            counter = 1
+            
+            while not splash:select('#variant-selector-primary') do
+                print(counter)
+                splash:wait(0.1)
+                counter = counter + 1
+                if counter >= 20 then 
+                    break 
+                end
+            end
+            
+            return {html=splash:html()}
+        end
+        """
+
+    # Parse method invoked by scrapy TODO: move to start_request
+    '''def parse(self, response):
 
         # Categories from navbar
         main_categories = response.xpath('//li[contains(@class, "mega-nav__category-list-item") '
@@ -67,10 +87,14 @@ class BodyandfitspiderSpider(scrapy.Spider):
                     if category_page:
                         url = self.url + category_page
                         self.page = 0
-                        yield SplashRequest(url=url, callback=self.parse_category, endpoint='render.html')
+                        yield SplashRequest(url=url, callback=self.parse_category, endpoint='render.html')'''
+
+    def start_requests(self):
+        for url in self.start_urls:
+            yield SplashRequest(url=url, callback=self.parse, endpoint='render.html')
 
     # Parse category
-    def parse_category(self, response):
+    def parse(self, response):
         # Products on product list page
         products = response.xpath('//article[@class="product-slab"]')
 
@@ -85,19 +109,19 @@ class BodyandfitspiderSpider(scrapy.Spider):
             item = BodyandfitcrawlerItem()
 
             # store product information in item
-            self.parse_product(response, product, item)
+            item = self.parse_product(response, product, item)
 
             # Follow each product on its detail page
             detail_page = product.xpath('.//a[@class="product-slab__gallery"]/@href').get()
             if detail_page:
                 url = self.url + detail_page
-                yield SplashRequest(url=url, callback=self.parse_item_detail, endpoint='render.html',
-                                    meta={'item': item})
+                yield SplashRequest(url=url, callback=self.parse_item_detail, endpoint='execute',
+                                    meta={'item': item}, args={'lua_source': self.lua_script})
 
         # Follow pagination to next sites
         self.page += 1
-        next_page_url = response.request.url + "?text=%%3Arelevance%%3A&page=%d" % self.page
-        yield SplashRequest(url=next_page_url, callback=self.parse_category, endpoint='render.html')
+        next_page_url = response.request._original_url + "?text=%%3Arelevance%%3A&page=%d" % self.page
+        yield SplashRequest(url=next_page_url, callback=self.parse, endpoint='render.html')
 
     def parse_product(self, response, product, item):
         small_image_url = product.xpath('.//a[@class="product-slab__gallery"]').extract()
@@ -120,41 +144,50 @@ class BodyandfitspiderSpider(scrapy.Spider):
     def parse_item_detail(self, response):
 
         item = response.meta['item']
+        ht = HtmlResponse(url=response.url, body=response.body, encoding="utf-8", request=response.request)
 
-        large_image_url = response.xpath('//*[contains(@class, "amp-slide")]').extract()
+        large_image_url = ht.xpath('//*[contains(@class, "product-gallery")]')
+        large_image_url = large_image_url.extract()
         large_image_url = self.clean_text(self.parse_img(self.list_to_str(large_image_url)))
+
+        url = response.request._original_url
 
         name = response.xpath('//*[contains(@class, "product-details__name")]').extract()
         name = self.clean_text(self.parse_text(self.list_to_str(name)))
 
-        description_long = response.xpath('//*[contains(@class, "product-overview__info-text")]').extract()
-        description_long = self.clean_text(self.parse_text(self.list_to_str(description_long)))
-
         nutrition = response.xpath('//section[@id="tabNutrition"]').extract()
         nutrition = self.clean_text(self.parse_img(self.list_to_str(nutrition)))
+
+        description_long = response.xpath('//*[contains(@class, "product-overview__info-text")]').extract_first()
+
+        if not description_long:
+            description_long = item['description_short']
+        else:
+            description_long = self.clean_text(self.parse_text(self.list_to_str(description_long)))
 
         size_to_price = response.xpath('//select[@id="variant-selector-primary"]').extract()
 
         if not size_to_price:
-            sizes = response.xpath('//*[contains(@class, "variant-selector__selector")]').extract()
+            sizes = response.xpath('//*[contains(@class, "variant-selector__selector--primary")]').extract()
             sizes = self.clean_text(self.parse_text(self.list_to_str(sizes)))
-            prices = response.xpath('//*[contains(@class, "variant-selector__price")]').extract()
+            prices = response.xpath('//*[contains(@class, "product-price__value")]').extract_first()
             prices = self.clean_text(self.parse_text(self.list_to_str(prices)))
             flavours = 'Neutral'
         else:
-            size_to_price = self.clean_text(self.parse_select(self.list_to_str(size_to_price)))
+            size_to_price = self.parse_select(self.list_to_str(size_to_price))
             sizes, prices = self.get_sizes_and_prices_from_select(size_to_price)
             flavours = response.xpath('//select[@id="variant-selector-secondary"]').extract()
-            flavours = self.clean_text(self.parse_select(self.list_to_str(flavours)))
+            flavours = self.parse_select(self.list_to_str(flavours))
 
         item['name'] = ''.join(name).strip()
-        item['large_img_url'] = ''.join().strip()
+        item['large_image_url'] = ''.join(large_image_url).strip()
         item['description_long'] = ''.join(description_long).strip()
         item['nutrition'] = ''.join(nutrition).strip()
         item['allergens'] = ''.join(nutrition).strip()  # Allergens are stored in nutrition picture
-        item['sizes'] = ''.join(sizes).strip()
-        item['prices'] = ''.join(prices).strip()
-        item['flavours'] = ''.join(flavours).strip()
+        item['sizes'] = sizes
+        item['prices'] = prices
+        item['flavours'] = flavours
+        item['url'] = ''.join(url).strip()
 
         yield item
 
@@ -202,7 +235,8 @@ class BodyandfitspiderSpider(scrapy.Spider):
     def get_sizes_and_prices_from_select(size_to_price):
         sizes = []
         prices = []
+        size_to_price.pop(0)
         for size_price in size_to_price:
-            sizes.append(size_price.split(" ")[0])
-            prices.append(size_price.split(" ")[4])
+            sizes.append(size_price.split(" ")[0] + " " + size_price.split(" ")[1])
+            prices.append(size_price.split(" ")[5] + " " + size_price.split(" ")[6])
         return sizes, prices
