@@ -7,22 +7,22 @@
   ],
   "selectors": [
     {
-      "id": "product_element",
+      "id": "product-element",
       "type": "SelectorElement",
       "parentSelectors": [
         "product-category"
       ],
       "selector": "div.product-index",
-      "multiple": false,
+      "multiple": true,
       "delay": 0
     },
     {
       "id": "product-url",
       "type": "SelectorLink",
       "parentSelectors": [
-        "product_element"
+        "product-element"
       ],
-      "selector": ".product-info-inner a",
+      "selector": ".prod-image a",
       "multiple": false,
       "delay": 0
     },
@@ -47,17 +47,6 @@
       "delay": 0
     },
     {
-      "id": "product-name",
-      "type": "SelectorText",
-      "parentSelectors": [
-        "product-detail"
-      ],
-      "selector": "h1",
-      "multiple": false,
-      "regex": "",
-      "delay": 0
-    },
-    {
       "id": "product-price",
       "type": "SelectorText",
       "parentSelectors": [
@@ -65,7 +54,7 @@
       ],
       "selector": "p#product-price",
       "multiple": false,
-      "regex": "",
+      "regex": "([^\\s]+)",
       "delay": 0
     },
     {
@@ -118,6 +107,17 @@
       ],
       "selector": ".row.text-center img",
       "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-name",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "product-detail"
+      ],
+      "selector": "h1",
+      "multiple": false,
+      "regex": "([^\\n]+)[\\s\\n]+([^\\n]+)",
       "delay": 0
     }
   ]
