@@ -1,0 +1,163 @@
+{
+  "_id": "fitmart",
+  "startUrl": [
+    "https://www.fitmart.de/Eiweisspulver/",
+    "https://www.fitmart.de/Proteinreiche-Lebensmittel/",
+    "https://www.fitmart.de/Eiweissriegel/",
+    "https://www.fitmart.de/Aminosaeuren/",
+    "https://www.fitmart.de/Creatin/",
+    "https://www.fitmart.de/Masseaufbau/",
+    "https://www.fitmart.de/Testo-Booster/",
+    "https://www.fitmart.de/Trainingsbooster/",
+    "https://www.fitmart.de/Naehrstofftiming/",
+    "https://www.fitmart.de/Diaetprodukte/",
+    "https://www.fitmart.de/Low-Carb/",
+    "https://www.fitmart.de/Superfoods/",
+    "https://www.fitmart.de/Vitalstoffe/"
+  ],
+  "selectors": [
+    {
+      "id": "product-category",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "_root"
+      ],
+      "selector": "h1",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-element",
+      "type": "SelectorElement",
+      "parentSelectors": [
+        "_root",
+        "pagination"
+      ],
+      "selector": "li.productData",
+      "multiple": true,
+      "delay": 0
+    },
+    {
+      "id": "pagination",
+      "type": "SelectorLink",
+      "parentSelectors": [
+        "_root"
+      ],
+      "selector": ".is-bottom .bb_pagination--group a",
+      "multiple": true,
+      "delay": "500"
+    },
+    {
+      "id": "product-url",
+      "type": "SelectorLink",
+      "parentSelectors": [
+        "product-element"
+      ],
+      "selector": "a.bb_product--detaillink",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-img",
+      "type": "SelectorImage",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "img[itemprop='image']",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-description-long",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": ".is-current .bb_boxtxt--content > div:nth-of-type(1)",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-nutrition",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "table",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-allergens",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "div.small p",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-size",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": ".is-current .bb_boxtxt--content > p",
+      "multiple": false,
+      "regex": "(\\d*\\.?\\d+)\\s?(\\w+)",
+      "delay": 0
+    },
+    {
+      "id": "flavour-click",
+      "type": "SelectorElementClick",
+      "parentSelectors": [
+        "product-url"
+      ],
+      "selector": "body",
+      "multiple": true,
+      "delay": "500",
+      "clickElementSelector": "select option:not([disabled]):not(:first-child)",
+      "clickType": "clickOnce",
+      "discardInitialElements": "discard-when-click-element-exists",
+      "clickElementUniquenessType": "uniqueCSSSelector"
+    },
+    {
+      "id": "product-flavour",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "select option[selected]",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-price",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "span[itemprop='price']",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-name",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "h1",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    }
+  ]
+}

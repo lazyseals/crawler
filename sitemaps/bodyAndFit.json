@@ -1,0 +1,183 @@
+{
+  "_id": "body_and_fit",
+  "startUrl": [
+    "https://www.bodyandfit.com/de-de/Produkte/Protein/Milchproteine/c/2",
+    "https://www.bodyandfit.com/de-de/Produkte/Protein/Weitere-Proteinprodukte/c/16",
+    "https://www.bodyandfit.com/de-de/Produkte/Protein/Pfanzliche-Proteine/c/11",
+    "https://www.bodyandfit.com/de-de/Food-and-snacks/c/food-and-snacks",
+    "https://www.bodyandfit.com/de-de/Produkte/Sportnahrung/Aminos%C3%A4uren/c/47",
+    "https://www.bodyandfit.com/de-de/Produkte/Sportnahrung/Pre-Workout/c/41",
+    "https://www.bodyandfit.com/de-de/Produkte/Sportnahrung/Performance/c/67",
+    "https://www.bodyandfit.com/de-de/Produkte/Sportnahrung/Ausdauer/c/78",
+    "https://www.bodyandfit.com/de-de/Produkte/Ern%C3%A4hrung/Riegel-%26-Snacks/c/193",
+    "https://www.bodyandfit.com/de-de/Produkte/Ern%C3%A4hrung/Backen/c/203",
+    "https://www.bodyandfit.com/de-de/Produkte/Ern%C3%A4hrung/Nussbutter/c/210",
+    "https://www.bodyandfit.com/de-de/Produkte/Ern%C3%A4hrung/Superfood/c/216",
+    "https://www.bodyandfit.com/de-de/Produkte/Ern%C3%A4hrung/T%C3%A4glicher-Bedarf/c/238",
+    "https://www.bodyandfit.com/de-de/Produkte/Abnehmen/Abnehmshakes/c/101",
+    "https://www.bodyandfit.com/de-de/Produkte/Abnehmen/Nahrungserg%C3%A4nzung/c/106",
+    "https://www.bodyandfit.com/de-de/Produkte/Gesundheit/Vitamine/c/129",
+    "https://www.bodyandfit.com/de-de/Produkte/Gesundheit/Empfehlungen-f%C3%BCr-Ihre-Ern%C3%A4hrung/c/155",
+    "https://www.bodyandfit.com/de-de/Produkte/Gesundheit/Weitere-Gesundheitsprodukte/c/182",
+    "https://www.bodyandfit.com/de-de/Produkte/Gesundheit/Nootropika/c/170",
+    "https://www.bodyandfit.com/de-de/Produkte/Gesundheit/Vitalit%C3%A4t/c/health-wellbeing-shop-by-need"
+  ],
+  "selectors": [
+    {
+      "id": "product-url",
+      "type": "SelectorLink",
+      "parentSelectors": [
+        "pagination"
+      ],
+      "selector": "a.product-slab__title",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-description-short",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "pagination"
+      ],
+      "selector": "div.product-slab__information",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "pagination",
+      "type": "SelectorElementClick",
+      "parentSelectors": [
+        "_root"
+      ],
+      "selector": "article[data-ga-product]",
+      "multiple": true,
+      "delay": "1500",
+      "clickElementSelector": "button.plp-load-more__btn",
+      "clickType": "clickMore",
+      "discardInitialElements": "do-not-discard",
+      "clickElementUniquenessType": "uniqueCSSSelector"
+    },
+    {
+      "id": "size-click",
+      "type": "SelectorElementClick",
+      "parentSelectors": [
+        "product-url"
+      ],
+      "selector": "body",
+      "multiple": true,
+      "delay": 2000,
+      "clickElementSelector": ".form-element:contains(\"Größe\") select option:not([disabled])",
+      "clickType": "clickOnce",
+      "discardInitialElements": "discard-when-click-element-exists",
+      "clickElementUniquenessType": "uniqueCSSSelector"
+    },
+    {
+      "id": "product-name",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "size-click"
+      ],
+      "selector": ".product-details__name",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-price",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "size-click"
+      ],
+      "selector": ".product-price__value",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-size",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "size-click"
+      ],
+      "selector": ".form-element:contains(\"Größe\") select option[selected]",
+      "multiple": false,
+      "regex": "\\d+ ([^\\s]+)",
+      "delay": 0
+    },
+    {
+      "id": "product-flavour",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "size-click"
+      ],
+      "selector": ".form-element:contains(\"Geschmack\") select option:not([disabled])",
+      "multiple": true,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-img",
+      "type": "SelectorImage",
+      "parentSelectors": [
+        "pagination"
+      ],
+      "selector": "img",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-description-long",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "size-click"
+      ],
+      "selector": "div.product-overview__info-text",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-nutrition",
+      "type": "SelectorImage",
+      "parentSelectors": [
+        "size-click"
+      ],
+      "selector": ".product-label img",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-allergens",
+      "type": "SelectorImage",
+      "parentSelectors": [
+        "size-click"
+      ],
+      "selector": ".product-label img",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-category",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "_root"
+      ],
+      "selector": "h1",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-size-alternative",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "size-click"
+      ],
+      "selector": "output",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    }
+  ]
+}

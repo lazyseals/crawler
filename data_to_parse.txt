@@ -1,0 +1,11 @@
+allergens
+category
+description_long
+[description_short] -> Falls available
+flavour
+img
+name 
+nutrition
+prices
+sizes
+url

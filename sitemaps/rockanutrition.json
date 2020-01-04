@@ -1,0 +1,124 @@
+{
+  "_id": "rockanutrition",
+  "startUrl": [
+    "https://www.rockanutrition.de/pages/supplements",
+    "https://www.rockanutrition.de/pages/light-produkte",
+    "https://www.rockanutrition.de/pages/proteine-collection"
+  ],
+  "selectors": [
+    {
+      "id": "product_element",
+      "type": "SelectorElement",
+      "parentSelectors": [
+        "product-category"
+      ],
+      "selector": "div.product-index",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-url",
+      "type": "SelectorLink",
+      "parentSelectors": [
+        "product_element"
+      ],
+      "selector": ".product-info-inner a",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-category",
+      "type": "SelectorLink",
+      "parentSelectors": [
+        "_root"
+      ],
+      "selector": "a.collection-item__title",
+      "multiple": true,
+      "delay": 0
+    },
+    {
+      "id": "product-detail",
+      "type": "SelectorElement",
+      "parentSelectors": [
+        "product-url"
+      ],
+      "selector": ".product-form",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-name",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "product-detail"
+      ],
+      "selector": "h1",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-price",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "product-detail"
+      ],
+      "selector": "p#product-price",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-img",
+      "type": "SelectorImage",
+      "parentSelectors": [
+        "product-detail"
+      ],
+      "selector": "img",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-description-long",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "product-detail"
+      ],
+      "selector": ".product-description p",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-flavour",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "product-detail"
+      ],
+      "selector": "h1 span",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-allergens",
+      "type": "SelectorImage",
+      "parentSelectors": [
+        "product-detail"
+      ],
+      "selector": ".row.text-center img",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-nutrition",
+      "type": "SelectorImage",
+      "parentSelectors": [
+        "product-detail"
+      ],
+      "selector": ".row.text-center img",
+      "multiple": false,
+      "delay": 0
+    }
+  ]
+}
