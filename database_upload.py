@@ -3,6 +3,7 @@
 
 from pymongo import MongoClient
 import csv
+import os
 import re
 
 # column names which may appear in row
@@ -53,6 +54,13 @@ columns_to_add = [
     'product-category'
 ]
 
+# collection names in cloud
+collection_names = {
+    "fitmart.csv": "fitmart",
+    "rockanutrition.csv": "rockanutrition",
+    "body_and_fit.csv": "bodyandfit"
+}
+
 
 def get_collection(collection, database="shops"):
     print('### GET MONGODB COLLECTION ###')
@@ -83,7 +91,7 @@ def parse_csv(file):
             # If this is the case append the next line to this one.
 
             if iteration >= 1:
-                if file == "rockanutrition.csv":
+                if file == "data/rockanutrition.csv":
                     # Remove commas inside quotes
                     row = re.sub(',(?=[^"]*"[^"]*(?:"[^"]*"[^"]*)*$)', ".", row[0])
                     row = row.split(',')
@@ -142,6 +150,7 @@ def create_document(row, attr_positions):
 
     return document
 
+
 def upsert_collection(col, documents):
     # update if document exists else insert => up(date)(in)sert
     print("### UPDATE ###")
@@ -152,12 +161,25 @@ def upsert_collection(col, documents):
         i += 1
 
 
-# 1. Get database
-col = get_collection(collection="fitmart")
+def update_file(file):
+    # 1. Get database
+    col = get_collection(collection=collection_names[file])
+
+    # 2. Parse csv
+    documents = parse_csv("data/"+file)
+
+    # 3. Update collection
+    upsert_collection(col, documents)
 
 
-# 2. Parse csv
-documents = parse_csv("data/fitmart.csv")
+def update_all_files():
+    dir = os.fsencode("data")
+    for file in os.listdir(dir):
+        filename = os.fsdecode(file)
+        if filename.endswith(".csv"):
+            print("### PROCESS: " + filename + " ###")
+            update_file(filename)
 
-# 3. Update collection
-upsert_collection(col, documents)
+
+# update_all_files()
+update_file("rockanutrition.csv")
