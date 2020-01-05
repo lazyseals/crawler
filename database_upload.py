@@ -2,64 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from pymongo import MongoClient
+
 import csv
 import os
 import re
 
-# column names which may appear in row
-possible_column_names = [
-    'product-name',
-    'product-url-href',
-    'product-description-long',
-    'product-price',
-    'product-size',
-    'product-flavour',
-    'product-img-src',
-    'product-img',
-    'product-nutrition-src',
-    'product-nutrition',
-    'product-allergens-src',
-    'product-allergens',
-    'product-category'
-]
-
-# match html attribute elements to real mongodb columsn which will be added
-attribute_to_mongocol = {
-    'product-url-href': 'product-url',
-    'product-nutrition-src': 'product-nutrition',
-    'product-allergens-src': 'product-allergens',
-    'product-img-src': 'product-img',
-    'product-name': 'product-name',
-    'product-description-long': 'product-description-long',
-    'product-price': 'product-price',
-    'product-size': 'product-size',
-    'product-flavour': 'product-flavour',
-    'product-img': 'product-img',
-    'product-nutrition': 'product-nutrition',
-    'product-allergens': 'product-allergens',
-    'product-category': 'product-category'
-}
-
-# columns which will be added to mongodb per document
-columns_to_add = [
-    'product-name',
-    'product-url',
-    'product-description-long',
-    'product-price',
-    'product-size',
-    'product-flavour',
-    'product-img',
-    'product-nutrition',
-    'product-allergens',
-    'product-category'
-]
-
-# collection names in cloud
-collection_names = {
-    "fitmart.csv": "fitmart",
-    "rockanutrition.csv": "rockanutrition",
-    "body_and_fit.csv": "bodyandfit"
-}
+import dictionaries as d
+import shop_parser as sp
 
 
 def get_collection(collection, database="shops"):
@@ -121,14 +70,24 @@ def parse_csv(file):
         return documents
 
 
+def match_category(category, shop):
+    # replace native shop category name with my category name if defined
+    if category.lower() in d.category_matching[shop]:
+        global replaced_categories
+        replaced_categories.add(category.lower())
+        return d.category_matching[shop][category.lower()]
+    else:
+        return category
+
+
 def create_document_positions(row):
     attr_positions = {}
 
     # Define positions for elements to add in row
     i = 0
     for el in row:
-        if el in possible_column_names:
-            attr_positions[attribute_to_mongocol[el]] = i
+        if el in d.possible_column_names:
+            attr_positions[d.attribute_to_mongocol[el]] = i
         i += 1
 
     return attr_positions
@@ -136,13 +95,24 @@ def create_document_positions(row):
 
 def create_document(row, attr_positions):
     document = {}
-    tmp = {}
 
     # Create document
-    for col in columns_to_add:
+    #
+    # IMPORTANT: product-category needs to come before product-name in columns_to_add
+    #
+    for col in d.columns_to_add:
         try:
             # Parse out linebreaks
-            document[col] = re.sub("/\r?\n|\r/", "", row[attr_positions[col]])
+            el = re.sub("/\r?\n|\r/", "", row[attr_positions[col]])
+            el = re.sub('"', '', el)
+            # Match product category
+            if col == 'product-category':
+                el = match_category(el, current_shop)
+                category_save = el
+            elif col == 'product-name':
+                el = sp.parse_rocka(category_save, el)
+            # Set document element
+            document[col] = el
         except KeyError:
             # Key error if csv contains not a col which is expected.
             # E.g. "rockanutrition" doesn't have key "product-size"
@@ -156,20 +126,28 @@ def upsert_collection(col, documents):
     print("### UPDATE ###")
     i = 1
     for d in documents:
-        col.update_one({'product-name': d['product-name'], 'product-flavour': d['product-flavour']}, {"$set": d}, True)
+        col.update_one({'product-name': d['product-name'], 'product-flavour': d['product-flavour'],
+                        'product-category': d['product-category']}, {"$set": d}, True)
         print("Updated " + str(i) + "/" + str(len(documents)) + ": " + str(d))
         i += 1
 
 
+def print_replaced_categories():
+    print(replaced_categories)
+
+
 def update_file(file):
+    global current_shop
+    current_shop = d.collection_names[file]
+
     # 1. Get database
-    col = get_collection(collection=collection_names[file])
+    # col = get_collection(collection=d.collection_names[file])
 
     # 2. Parse csv
     documents = parse_csv("data/"+file)
 
     # 3. Update collection
-    upsert_collection(col, documents)
+    # upsert_collection(col, documents)
 
 
 def update_all_files():
@@ -181,5 +159,10 @@ def update_all_files():
             update_file(filename)
 
 
+# Global variables
+current_shop = ""
+replaced_categories = set()
+
+# Methods to update
 # update_all_files()
 update_file("rockanutrition.csv")
