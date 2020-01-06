@@ -1,0 +1,170 @@
+{
+  "_id": "myprotein",
+  "startUrl": [
+    "https://de.myprotein.com/nutrition/protein/whey-protein.list",
+    "https://de.myprotein.com/nutrition/protein/milk-protein.list",
+    "https://de.myprotein.com/nutrition/protein/vegan-protein.list",
+    "https://de.myprotein.com/nutrition/protein/blends.list",
+    "https://de.myprotein.com/nutrition/amino-acids/bcaa.list",
+    "https://de.myprotein.com/nutrition/amino-acids/glutamine.list",
+    "https://de.myprotein.com/nutrition/amino-acids/l-carnitine.list",
+    "https://de.myprotein.com/nutrition/creatine/creatine-monohydrate.list",
+    "https://de.myprotein.com/nutrition/weight-management/weight-gainers.list",
+    "https://de.myprotein.com/nutrition/weight-management/weight-loss-supplements.list",
+    "https://de.myprotein.com/nutrition/weight-management/weight-loss-shakes.list",
+    "https://de.myprotein.com/nutrition/pre-post-workout/pre-workout.list",
+    "https://de.myprotein.com/nutrition/pre-post-workout/intra-workout.list",
+    "https://de.myprotein.com/nutrition/pre-post-workout/post-workout.list",
+    "https://de.myprotein.com/nutrition/carbohydrates/energy-supplements.list",
+    "https://de.myprotein.com/nutrition/carbohydrates/energy-bars.list",
+    "https://de.myprotein.com/nutrition/carbohydrates/energy-gels.list",
+    "https://de.myprotein.com/nutrition/carbohydrates/energy-drinks.list",
+    "https://de.myprotein.com/nutrition/healthy-food-drinks/protein-bars.list",
+    "https://de.myprotein.com/nutrition/healthy-food-drinks/nut-butters.list",
+    "https://de.myprotein.com/nutrition/healthy-food-drinks/flavouring-sweeteners.list",
+    "https://de.myprotein.com/nutrition/healthy-food-drinks/protein-drinks.list",
+    "https://de.myprotein.com/nutrition/healthy-food-drinks/meal-replacement.list",
+    "https://de.myprotein.com/nutrition/healthy-food-drinks/protein-foods.list",
+    "https://de.myprotein.com/nutrition/healthy-food-drinks/protein-snacks.list",
+    "https://de.myprotein.com/nutrition/vitamins-minerals/multivitamin-supplements.list",
+    "https://de.myprotein.com/nutrition/vitamins-minerals/vitamin-supplements.list",
+    "https://de.myprotein.com/nutrition/vitamins-minerals/mineral-supplements.list",
+    "https://de.myprotein.com/nutrition/fibre-essential-fats/fibre.list",
+    "https://de.myprotein.com/nutrition/fibre-essential-fats/herbal-plant-supplements.list",
+    "https://de.myprotein.com/nutrition/fibre-essential-fats/omega-3-fish-oils.list"
+  ],
+  "selectors": [
+    {
+      "id": "pagination",
+      "type": "SelectorLink",
+      "parentSelectors": [
+        "_root"
+      ],
+      "selector": ".responsiveProductListPage_topPagination .responsivePaginationPages .responsivePaginationButton:not(.responsivePageSelectorActive)",
+      "multiple": true,
+      "delay": "1500"
+    },
+    {
+      "id": "product-url",
+      "type": "SelectorLink",
+      "parentSelectors": [
+        "product-element"
+      ],
+      "selector": "a",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-element",
+      "type": "SelectorElement",
+      "parentSelectors": [
+        "_root",
+        "pagination"
+      ],
+      "selector": "div.athenaProductBlock",
+      "multiple": true,
+      "delay": 0
+    },
+    {
+      "id": "flavour-click",
+      "type": "SelectorElementClick",
+      "parentSelectors": [
+        "product-url"
+      ],
+      "selector": "body",
+      "multiple": true,
+      "delay": "500",
+      "clickElementSelector": "select option:not([disabled])",
+      "clickType": "clickOnce",
+      "discardInitialElements": "discard-when-click-element-exists",
+      "clickElementUniquenessType": "uniqueText"
+    },
+    {
+      "id": "product-name",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": ".athenaProductPage_productName h1",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-img",
+      "type": "SelectorImage",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "img.athenaProductImageCarousel_thumbnail",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-size",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "button.athenaProductVariations_box",
+      "multiple": false,
+      "regex": "(\\d*\\.?\\d+)\\s?(\\w+)",
+      "delay": 0
+    },
+    {
+      "id": "product-description-long",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "div#product-description-content-2",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-flavour",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "select option[selected]",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-allergens",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "div#product-description-content-7 strong:not(:first-child)",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-nutrition",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "table",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-price",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": ".athenaProductPage_productPrice p",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    }
+  ]
+}

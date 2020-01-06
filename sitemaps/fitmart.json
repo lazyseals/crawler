@@ -17,22 +17,11 @@
   ],
   "selectors": [
     {
-      "id": "product-category",
-      "type": "SelectorText",
-      "parentSelectors": [
-        "_root"
-      ],
-      "selector": "h1",
-      "multiple": false,
-      "regex": "",
-      "delay": 0
-    },
-    {
       "id": "product-element",
       "type": "SelectorElement",
       "parentSelectors": [
-        "_root",
-        "pagination"
+        "pagination",
+        "category-link"
       ],
       "selector": "li.productData",
       "multiple": true,
@@ -42,7 +31,7 @@
       "id": "pagination",
       "type": "SelectorLink",
       "parentSelectors": [
-        "_root"
+        "category-link"
       ],
       "selector": ".is-bottom .bb_pagination--group a",
       "multiple": true,
@@ -96,7 +85,7 @@
       "parentSelectors": [
         "flavour-click"
       ],
-      "selector": "div.small p",
+      "selector": "div.small p strong",
       "multiple": false,
       "regex": "",
       "delay": 0
@@ -153,6 +142,27 @@
       "type": "SelectorText",
       "parentSelectors": [
         "flavour-click"
+      ],
+      "selector": "h1",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "category-link",
+      "type": "SelectorLink",
+      "parentSelectors": [
+        "_root"
+      ],
+      "selector": "a.bb_subcat--link",
+      "multiple": true,
+      "delay": 0
+    },
+    {
+      "id": "product-category",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "category-link"
       ],
       "selector": "h1",
       "multiple": false,

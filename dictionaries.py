@@ -54,25 +54,26 @@ collection_names = {
 }
 
 category_bodyandfit = {
-    "sasein-protein": "Casein Protein",
-    "milchprotein": "Casein Protein",
+    "casein-protein": "Casein Protein",
+    "milchprotein mischungen": "Protein Mischungen",
     "aminosäure-blends": "Aminsäuren Komplex",
     "was sind bcaas?": "BCAA",
     "aminosäure-getränke": "Aminosäuren Getränke",
     "pump & trainingsbooster": "Trainingsbooster",
     "kreatin": "Creatin",
     "kohlenhydrate": "Kohlenhydratpulver",
-    "energy-riegel": "Energieriegel",
+    "energy bars": "Energieriegel",
     "knabbereien": "Chips",
     "mandelmus": "Aufstriche",
     "cashewmus": "Aufstriche",
     "erdnussbutter": "Aufstriche",
     "flüssiges eiklar": "Eiklar",
     "leinsamen / flachssamen": "Nüsse & Samen",
-    "pasta, reis & co.": "Pizza & Pasta",
-    "cooking sprays & Speiseöle": "Speiseöle",
-    "gewürze & sossen": "Gewürze & Saucen",
-    "b-vitamine": "Vitamin B"
+    "pasta, reis & co": "Pizza & Pasta",
+    "cooking sprays & speiseöle": "Speiseöle",
+    "gewürze & soßen": "Gewürze & Saucen",
+    "b-vitamine": "Vitamin B",
+    "mahlzeitersetzende shakes": "Mahlzeitenersatz-Shakes"
 }
 
 category_rockanutrition = {
@@ -94,43 +95,75 @@ category_rockanutrition = {
 }
 
 category_fitmart = {
-    "Mehrkomponenten Protein": "Milchprotein Mischungen",
-    "Soja Protein": "Sojaprotein",
-    "Pflanzliches Eiweiss": "Veganes Protein",
-    "Egg Protein": "Eiprotein",
-    "Protein Pancake": "Backmischungen",
-    "Protein Pudding": "Pudding",
-    "Low Carb Proteinriegel": "Proteinriegel",
-    "Protein Cookie": "Cookies & Muffins",
-    "Amino Liquid": "Aminsäuren Getränke",
-    "Creatin Kapseln": "Creatin",
-    "Creatin Pulver": "Creatin",
-    "Creatin Monohydrat": "Creatin",
-    "Kre-Alkalyn": "Creatin",
-    "Krea-Genic": "Creatin",
-    "Creatin Matrix": "Creatin",
-    "Haferflocken": "Getreide",
-    "Pre-Workout Booster": "Trainingsbooster",
-    "No Booster": "Trainingsbooster",
-    "Booster ohne Creatin": "Trainingsbooster",
-    "Energy Drink": "Energy Drinks",
-    "Grüntee Extrakt": "Tee & Kaffee",
-    "Koffein": "Tee & Kaffee",
-    "Guarana": "Tee & Kaffee",
-    "L-Carnitin": "Carnitin",
-    "Flavour System": "Aromen & Sußstoffe",
-    "Zuckeraustauschstoffe": "Aromen & Süßstoffe",
-    "Low Carb Sirup": "Syrup",
-    "low Carb Riegel": "Proteinriegel",
-    "Low Carb Saucen": "Gewürze & Saucen",
-    "Low Carb Butter": "Butter",
-    "Low Carb Aufstriche": "Aufstriche",
-    "Koch- & Backöle": "Speiseöle",
+    "mehrkomponenten protein": "Protein Mischungen",
+    "soja protein": "Sojaprotein",
+    "pflanzliches eiweiß": "Veganes Protein",
+    "egg protein": "Eiprotein",
+    "protein pancake": "Backmischungen",
+    "protein pudding": "Pudding",
+    "low carb protein riegel": "Proteinriegel",
+    "protein cookie": "Cookies & Muffins",
+    "amino liquid": "Aminsäuren Getränke",
+    "creatin kapseln": "Creatin",
+    "creatin pulver": "Creatin",
+    "creatin monohydrat": "Creatin",
+    "kre-alkalyn": "Creatin",
+    "krea-genic": "Creatin",
+    "creatin matrix": "Creatin",
+    "haferflocken": "Getreide",
+    "pre-workout booster": "Trainingsbooster",
+    "no booster": "Trainingsbooster",
+    "booster ohne creatin": "Trainingsbooster",
+    "energy drink": "Energy Drinks",
+    "grüntee extrakt": "Tee & Kaffee",
+    "koffein": "Tee & Kaffee",
+    "guarana": "Tee & Kaffee",
+    "l-carnitin": "Carnitin",
+    "flavour system": "Aromen & Sußstoffe",
+    "zuckeraustauschstoffe": "Aromen & Süßstoffe",
+    "low carb sirup": "Syrup",
+    "low carb riegel": "Proteinriegel",
+    "low carb saucen": "Gewürze & Saucen",
+    "low carb butter": "Aufstriche",
+    "low carb aufstriche": "Aufstriche",
+    "koch- & backöle": "Speiseöle",
+}
+
+category_myprotein = {
+    "casein & milch protein": "Casein Protein",
+    "vegan protein": "Veganes Protein",
+    "glutamin supplemente": "Glutamin",
+    "l-carnitin supplemente": "Carnitin",
+    "creatin monohydrat": "Creatin",
+    "energy riegel": "Energieriegel",
+    "nussbutter": "Aufstriche",
+    "süßstoffe und aromastoffe": "Aromen und Süßstoffe",
+    "omega 3 fettsäuren": "Omega-3",
+    "pflanzliche supplemente": "Pflanzliche Nahrungsergänzungsmittel"
 }
 
 # match category from shop to site category
 category_matching = {
     "bodyandfit": category_bodyandfit,
     "rockanutrition": category_rockanutrition,
-    "fitmart": category_fitmart
+    "fitmart": category_fitmart,
+    "myprotein": category_myprotein
 }
+
+toparse_myprotein = [
+    "bcaa supplemente",
+    "gewichtsverlustsupplemente",
+    "diät shakes",
+    "pre workout",
+    "intra workout",
+    "post workout",
+    "energy supplemente",
+    "energy gels",
+    "energy drinks",
+    "mahlzeitenersatz",
+    "proteinreiche lebensmittel",
+    "protein snacks",
+    "vitamine",
+    "mineralstoffe",
+    "ballaststoffe"
+]

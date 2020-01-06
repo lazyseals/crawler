@@ -108,9 +108,16 @@ def create_document(row, attr_positions):
             # Match product category
             if col == 'product-category':
                 el = match_category(el, current_shop)
-                category_save = el
+                save_cat = el
             elif col == 'product-name':
-                el = sp.parse_rocka(category_save, el)
+                cat = None
+                if current_shop == 'rockanutrition':
+                    cat = sp.parse_rocka(save_cat, el)
+                elif current_shop == 'fitmart':
+                    cat = sp.parse_fitmart(save_cat, el)
+                if cat is not None:
+                    # Update product category if product matches
+                    document['product-category'] = cat
             # Set document element
             document[col] = el
         except KeyError:
@@ -132,8 +139,8 @@ def upsert_collection(col, documents):
         i += 1
 
 
-def print_replaced_categories():
-    print(replaced_categories)
+def print_missing_categories(shop):
+    print({k: shop[k] for k in set(shop) - replaced_categories})
 
 
 def update_file(file):
@@ -141,13 +148,13 @@ def update_file(file):
     current_shop = d.collection_names[file]
 
     # 1. Get database
-    # col = get_collection(collection=d.collection_names[file])
+    col = get_collection(collection=d.collection_names[file])
 
     # 2. Parse csv
     documents = parse_csv("data/"+file)
 
     # 3. Update collection
-    # upsert_collection(col, documents)
+    upsert_collection(col, documents)
 
 
 def update_all_files():
@@ -164,5 +171,6 @@ current_shop = ""
 replaced_categories = set()
 
 # Methods to update
-# update_all_files()
-update_file("rockanutrition.csv")
+update_all_files()
+# update_file("body_and_fit.csv")
+# print_missing_categories(d.category_matching["bodyandfit"])
