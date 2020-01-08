@@ -50,7 +50,9 @@ columns_to_add = [
 collection_names = {
     "fitmart.csv": "fitmart",
     "rockanutrition.csv": "rockanutrition",
-    "body_and_fit.csv": "bodyandfit"
+    "body_and_fit.csv": "bodyandfit",
+    "myprotein.csv": "myprotein",
+    "zecplus.csv": "zecplus"
 }
 
 category_bodyandfit = {
@@ -130,16 +132,26 @@ category_fitmart = {
 }
 
 category_myprotein = {
-    "casein & milch protein": "Casein Protein",
+    "milcheiweiß & casein": "Casein Protein",
+    "eiweißmischungen & -formeln": "Milchprotein Mischungen",
     "vegan protein": "Veganes Protein",
-    "glutamin supplemente": "Glutamin",
-    "l-carnitin supplemente": "Carnitin",
-    "creatin monohydrat": "Creatin",
-    "energy riegel": "Energieriegel",
+    "glutamin-supplemente": "Glutamin",
+    "l-carnitin-supplemente": "Carnitin",
+    "creatin-monohydrat": "Creatin",
+    "weight-gainer-shakes": "Weight Gainer",
+    "protein riegel": "Proteinriegel",
     "nussbutter": "Aufstriche",
-    "süßstoffe und aromastoffe": "Aromen und Süßstoffe",
-    "omega 3 fettsäuren": "Omega-3",
-    "pflanzliche supplemente": "Pflanzliche Nahrungsergänzungsmittel"
+    "süßstoffe & aromastoffe": "Aromen und Süßstoffe",
+    "multivitamin-supplemente": "Multivitamine",
+    "omega-3- & fischöl-supplemente": "Omega-3",
+    "kräuter, pflanzen & nährstoffe": "Pflanzliche Nahrungsergänzungsmittel"
+}
+
+category_zecplus = {
+    "creatine": "Creatin",
+    "mhd-ware": "Antioxidantien",
+    "booster": "Trainingsbooster",
+    "riegel": "Proteinriegel"
 }
 
 # match category from shop to site category
@@ -147,23 +159,37 @@ category_matching = {
     "bodyandfit": category_bodyandfit,
     "rockanutrition": category_rockanutrition,
     "fitmart": category_fitmart,
-    "myprotein": category_myprotein
+    "myprotein": category_myprotein,
+    "zecplus": category_zecplus
 }
 
 toparse_myprotein = [
-    "bcaa supplemente",
-    "gewichtsverlustsupplemente",
-    "diät shakes",
-    "pre workout",
-    "intra workout",
-    "post workout",
-    "energy supplemente",
-    "energy gels",
-    "energy drinks",
+    "bcaa",
+    "pillen & supplemente zur gewichtsabnahme",
+    "diät-shakes",
+    "pre-workout-getränke, -shakes und -supplemente",
+    "intra-workout",
+    "post-workout-shakes & erholungs-supplemente",
+    "energie-supplemente",
+    "energie-, sport- & recovery-gels",
+    "sport- & energiegetränke",
     "mahlzeitenersatz",
     "proteinreiche lebensmittel",
-    "protein snacks",
-    "vitamine",
-    "mineralstoffe",
-    "ballaststoffe"
+    "proteinreiche snacks",
+    "vitamin-supplemente",
+    "mineralstoff-supplemente",
+    "ballaststoff-supplemente"
+]
+
+toparse_zecplus = [
+    "aminosäuren",
+    "fettsäuren",
+    "kohlenhydrate/weight gainer",
+    "post workout"
+    "proteine/eiweiss",
+    "ergogenics",
+    "food",
+    "intra workout",
+    "pre workout",
+    "vitamine&mineralien"
 ]

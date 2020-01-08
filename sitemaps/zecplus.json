@@ -1,0 +1,174 @@
+{
+  "_id": "zecplus",
+  "startUrl": [
+    "https://www.zecplus.de/Aminosaeuren",
+    "https://www.zecplus.de/Creatine",
+    "https://www.zecplus.de/Fettsaeuren",
+    "https://www.zecplus.de/Kohlenhydrate-Weight-Gainer",
+    "https://www.zecplus.de/MHD-Ware",
+    "https://www.zecplus.de/Proteine-Eiweiss",
+    "https://www.zecplus.de/Booster",
+    "https://www.zecplus.de/Ergogenics",
+    "https://www.zecplus.de/Fatburner",
+    "https://www.zecplus.de/Food",
+    "https://www.zecplus.de/Intra-Workout",
+    "https://www.zecplus.de/Riegel",
+    "https://www.zecplus.de/Vitamine-Mineralien"
+  ],
+  "selectors": [
+    {
+      "id": "product-category",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "_root"
+      ],
+      "selector": "li.last",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "pagination",
+      "type": "SelectorLink",
+      "parentSelectors": [
+        "_root"
+      ],
+      "selector": ".page a",
+      "multiple": true,
+      "delay": 0
+    },
+    {
+      "id": "product-element",
+      "type": "SelectorElement",
+      "parentSelectors": [
+        "_root",
+        "pagination"
+      ],
+      "selector": "div.product-wrapper",
+      "multiple": true,
+      "delay": 0
+    },
+    {
+      "id": "product-description-short",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "product-element"
+      ],
+      "selector": ".shortdescription",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-url",
+      "type": "SelectorLink",
+      "parentSelectors": [
+        "product-element"
+      ],
+      "selector": "a.btn",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-name",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "h1[itemprop='name']",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-price",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": ".price span",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-img",
+      "type": "SelectorImage",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": ".image-thumbs .active img",
+      "multiple": false,
+      "delay": 0
+    },
+    {
+      "id": "product-description-long",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": ".desc p:nth-of-type(1)",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-size",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "td.attr-value",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "flavour-click",
+      "type": "SelectorElementClick",
+      "parentSelectors": [
+        "product-url"
+      ],
+      "selector": "div.page-detail",
+      "multiple": true,
+      "delay": "500",
+      "clickElementSelector": ".col-xs-12:contains(\"Geschmack\"):not(:contains(\"Gewicht\")) .dropdown-menu .dropdown-menu a",
+      "clickType": "clickOnce",
+      "discardInitialElements": "discard-when-click-element-exists",
+      "clickElementUniquenessType": "uniqueText"
+    },
+    {
+      "id": "product-flavour",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "dt:contains('Geschmack') + .form-group span.filter-option",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-nutrition",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "#tab1-name",
+      "multiple": false,
+      "regex": "",
+      "delay": 0
+    },
+    {
+      "id": "product-allergens",
+      "type": "SelectorText",
+      "parentSelectors": [
+        "flavour-click"
+      ],
+      "selector": "#tab2-name",
+      "multiple": true,
+      "regex": "",
+      "delay": 0
+    }
+  ]
+}

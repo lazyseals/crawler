@@ -147,3 +147,71 @@ def parse_myprotein(category, product):
             return 'Zink'
         elif 'bcaa' in product or 'amino' in product:  # Many product with amino in -> Make sure this is the last
             return 'BCAA'
+
+def parse_zecplus(category, product):
+    product = product.lower()
+    category = category.lower()
+
+    if category in d.toparse_zecplus:
+        if "all in one" in product:
+            return "Multivitamine"
+        elif "antioxidan" in product:
+            return "Antioxidantien"
+        elif "arginin" in product:
+            return "Arginin"
+        elif "aroma" in product:
+            return "Aromen und Süßstoffe"
+        elif "athro" in product:
+            return "Glucosamin"
+        elif "bcaa" in product:
+            return "BCAA"
+        elif "beta alanin" in product:
+            return "Beta Alanin"
+        elif "casein" in product:
+            return "Casein Protein"
+        elif "citrullin" in product:
+            return "Citrullin"
+        elif "dextrose" in product:
+            return "Dextrose"
+        elif "eaa" in product:
+            return "EAA"
+        elif "fischöl" in product:
+            return "Omega-3"
+        elif "gaba" in product:
+            return "Gaba"
+        elif "gainer" in product:
+            return "Weight Gainer"
+        elif "greens" in product:
+            return "Pflanzliche Nahrungsergänzungsmittel"
+        elif "koffein" in product:
+            return "Koffein"
+        elif "kohlenhydrate" in product:
+            return "Kohlenhydratpulver"
+        elif "kokosöl" in product:
+            return "Speiseöle"
+        elif "liquid egg" in product:
+            return "eiklar"
+        elif "maltrodextrin" in product:
+            return "Maltrodextrin"
+        elif "mehrkomponenten" in product:
+            return "Protein Mischungen"
+        elif "nährstoff optimizer" in product or "sleep" in product:
+            return "Probiotika"
+        elif "nudeln" in product or "pizza" in product:
+            return "Pizza & Pasta"
+        elif "oats" in product:
+            return "Getreide"
+        elif "reis protein" in product:
+            return "Reisprotein"
+        elif "pulvermischung" in product or "pancakes" in product:
+            return "Backmischungen"
+        elif "tryptophan" in product or "intraplus" in product:
+            return "Aminosäuren Komplex"
+        elif "vitamin c" in product:
+            return "Vitamin C"
+        elif "vitamin d" in product:
+            return "Vitamin D"
+        elif "whey" in product or "clean concentrate" in product:
+            return "Whey Protein"
+        elif "zink" in product:
+            return "Zink"

@@ -115,11 +115,15 @@ def create_document(row, attr_positions):
                     cat = sp.parse_rocka(save_cat, el)
                 elif current_shop == 'fitmart':
                     cat = sp.parse_fitmart(save_cat, el)
+                elif current_shop == 'myprotein':
+                    cat = sp.parse_myprotein(save_cat, el)
+                elif current_shop == "zecplus":
+                    cat = sp.parse_zecplus(save_cat, el)
                 if cat is not None:
                     # Update product category if product matches
                     document['product-category'] = cat
             # Set document element
-            document[col] = el
+            document[col] = " ".join(el.split())
         except KeyError:
             # Key error if csv contains not a col which is expected.
             # E.g. "rockanutrition" doesn't have key "product-size"
@@ -128,19 +132,41 @@ def create_document(row, attr_positions):
     return document
 
 
-def upsert_collection(col, documents):
-    # update if document exists else insert => up(date)(in)sert
+def update_collection(col, documents, _upsert=False):
+    # update if document exists
     print("### UPDATE ###")
     i = 1
     for d in documents:
-        col.update_one({'product-name': d['product-name'], 'product-flavour': d['product-flavour'],
-                        'product-category': d['product-category']}, {"$set": d}, True)
-        print("Updated " + str(i) + "/" + str(len(documents)) + ": " + str(d))
+        res = col.update_one({'product-name': d['product-name'], 'product-flavour': d['product-flavour']},
+                             {"$set": d}, upsert=_upsert)
+        if res.matched_count > 0 or _upsert:
+            # Product exists in DB
+            print("Successfully Updated " + str(i) + "/" + str(len(documents)) + ": " + str(d))
+        else:
+            # Product doesn't exist in DB
+            global new_products
+            new_products.append((col.name, d))
+            print("Failed Update " + str(i) + "/" + str(len(documents)) + ": " + str(d))
         i += 1
+    print("New Products: " + str(new_products))
 
 
 def print_missing_categories(shop):
-    print({k: shop[k] for k in set(shop) - replaced_categories})
+    print("Missing Categories: " + str({k: shop[k] for k in set(shop) - replaced_categories}))
+
+
+def insert_new_products(file):
+    global current_shop
+    current_shop = d.collection_names[file]
+
+    # 1. Get database
+    col = get_collection(collection=d.collection_names[file])
+
+    # 2. Parse csv
+    documents = parse_csv("data/"+file)
+
+    # 3. Update collection
+    update_collection(col, documents, _upsert=True)
 
 
 def update_file(file):
@@ -154,7 +180,7 @@ def update_file(file):
     documents = parse_csv("data/"+file)
 
     # 3. Update collection
-    upsert_collection(col, documents)
+    update_collection(col, documents)
 
 
 def update_all_files():
@@ -169,8 +195,13 @@ def update_all_files():
 # Global variables
 current_shop = ""
 replaced_categories = set()
+new_products = []
 
 # Methods to update
-update_all_files()
-# update_file("body_and_fit.csv")
-# print_missing_categories(d.category_matching["bodyandfit"])
+# update_all_files()
+# update_file("myprotein.csv")
+
+# Methods to insert
+insert_new_products("zecplus.csv")
+
+print_missing_categories(d.category_matching["zecplus"])
