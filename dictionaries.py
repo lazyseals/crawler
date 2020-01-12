@@ -34,16 +34,18 @@ attribute_to_mongocol = {
 
 # columns which will be added to mongodb per document
 columns_to_add = [
+    'product-allergens',
     'product-category',
-    'product-name',
-    'product-url',
     'product-description-long',
-    'product-price',
-    'product-size',
+    'product-description-short',
     'product-flavour',
     'product-img',
+    'product-name',
     'product-nutrition',
-    'product-allergens'
+    'product-price',
+    'product-shop',
+    'product-size',
+    'product-url'
 ]
 
 # collection names in cloud
@@ -52,7 +54,8 @@ collection_names = {
     "rockanutrition.csv": "rockanutrition",
     "body_and_fit.csv": "bodyandfit",
     "myprotein.csv": "myprotein",
-    "zecplus.csv": "zecplus"
+    "zecplus.csv": "zecplus",
+    "weider.csv": "weider"
 }
 
 category_bodyandfit = {
@@ -154,13 +157,22 @@ category_zecplus = {
     "riegel": "Proteinriegel"
 }
 
+category_weider = {
+    "kohlenhydrate / weight gainer": "Weight Gainer",
+    "kreatin": "Creatin",
+    "koffeine / guarana": "Koffein",
+    "omega 3": "Omega-3",
+    "l-carnitine": "Carnitin"
+}
+
 # match category from shop to site category
 category_matching = {
     "bodyandfit": category_bodyandfit,
     "rockanutrition": category_rockanutrition,
     "fitmart": category_fitmart,
     "myprotein": category_myprotein,
-    "zecplus": category_zecplus
+    "zecplus": category_zecplus,
+    "weider": category_weider
 }
 
 toparse_myprotein = [
@@ -192,4 +204,13 @@ toparse_zecplus = [
     "intra workout",
     "pre workout",
     "vitamine&mineralien"
+]
+
+toparse_weider = [
+    "proteine / eiweiss",
+    "aminosäuren",
+    "vitamine / mineralien",
+    "weitere produkte",
+    "riegel",
+    "drinks"
 ]

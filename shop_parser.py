@@ -1,5 +1,6 @@
 import dictionaries as d
 
+
 def parse_rocka(category, product):
     product = product.lower()
     category = category.lower()
@@ -148,6 +149,7 @@ def parse_myprotein(category, product):
         elif 'bcaa' in product or 'amino' in product:  # Many product with amino in -> Make sure this is the last
             return 'BCAA'
 
+
 def parse_zecplus(category, product):
     product = product.lower()
     category = category.lower()
@@ -214,4 +216,66 @@ def parse_zecplus(category, product):
         elif "whey" in product or "clean concentrate" in product:
             return "Whey Protein"
         elif "zink" in product:
+            return "Zink"
+
+
+def parse_weider(category, product):
+    product = product.lower()
+    category = category.lower()
+
+    if category in d.toparse_weider:
+        if "ace" in product or "mineralstack" in product or "megabolic" in product or "multi vita" in product\
+                or "joint caps" in product:
+            return "Multivitamine"
+        elif "amino blast" in product or "amino nox" in product or "amino egg" in product or "amino powder" in product:
+            return "Aminosäuren Komplex"
+        elif "amino power liquid" in product or "bcaa rtd" in product or "eaa rtd" in product or "rush rtd" in product:
+            return "Aminosäuren Getränke"
+        elif "arginin" in product:
+            return "Arginin"
+        elif "bar" in product or "classic pack" in product or "riegel" in product or "wafer" in product:
+            return "Proteinriegel"
+        elif "bcaa" in product:
+            return "BCAA"
+        elif "glucan" in product:
+            return "Antioxidantien"
+        elif "casein" in product:
+            return "Casein Protein"
+        elif "cla" in product:
+            return "CLA"
+        elif "creme" in product:
+            return "Aufstriche"
+        elif "coffee" in product:
+            return "Tee & Kaffee"
+        elif "cookie" in product:
+            return "Cookies & Muffins"
+        elif "eaa" in product:
+            return "EAA"
+        elif "fresh up" in product:
+            return "Aromen und Süßstoffe"
+        elif "glucosamin" in product:
+            return "Glucosamin"
+        elif "glutamin" in product:
+            return "Glutamin"
+        elif "hmb" in product:
+            return "HMB"
+        elif "magnesium" in product:
+            return "Magnesium"
+        elif "omega 3" in product:
+            return "Omega-3"
+        elif "protein low carb" in product or "protein shake" in product or "starter drink" in product:
+            return "Protein Drinks"
+        elif "pump" in product or "rush" in product:
+            return "Trainingsbooster"
+        elif "soj 80" in product:
+            return "Sojaprotein"
+        elif "thermo stack" in product:
+            return "Fatburner"
+        elif "vegan protein" in product:
+            return "Veganes Protein"
+        elif "water" in product:
+            return "Ohne Kalorien"
+        elif "whey" in product or "protein 80" in product:
+            return "Whey Protein"
+        elif "zinc" in product:
             return "Zink"

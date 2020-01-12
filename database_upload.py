@@ -119,6 +119,8 @@ def create_document(row, attr_positions):
                     cat = sp.parse_myprotein(save_cat, el)
                 elif current_shop == "zecplus":
                     cat = sp.parse_zecplus(save_cat, el)
+                elif current_shop == "weider":
+                    cat = sp.parse_weider(save_cat, el)
                 if cat is not None:
                     # Update product category if product matches
                     document['product-category'] = cat
@@ -127,7 +129,9 @@ def create_document(row, attr_positions):
         except KeyError:
             # Key error if csv contains not a col which is expected.
             # E.g. "rockanutrition" doesn't have key "product-size"
-            pass
+            if col == "product-shop":
+                document[col] = current_shop
+            document[col] = ""
 
     return document
 
@@ -202,6 +206,6 @@ new_products = []
 # update_file("myprotein.csv")
 
 # Methods to insert
-insert_new_products("zecplus.csv")
+insert_new_products("weider.csv")
 
-print_missing_categories(d.category_matching["zecplus"])
+print_missing_categories(d.category_matching["weider"])
