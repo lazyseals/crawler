@@ -32,23 +32,28 @@ attribute_to_mongocol = {
     'product-category': 'product-category'
 }
 
-# columns which will be added to mongodb per document
-columns_to_add = [
-    'product-allergens',
-    'product-category',
-    'product-description-long',
-    'product-description-short',
-    'product-flavour',
-    'product-img',
-    'product-name',
-    'product-nutrition',
-    'product-price',
-    'product-shop',
-    'product-size',
-    'product-url'
-]
+# product item properties
+item = {
+    'iid': '',
+    'name': '',
+    'allergens': [],
+    'averageBewertung': None,
+    'descriptionLong': '',
+    'descriptionShort': '',
+    'flavours': [],
+    'img': '',
+    'nutritionImg': '',
+    'nutritionText': '',
+    'minPrice': '',
+    'minSize': '',
+    'popularity': None,
+    'shops': [],
+    'category': '',
+    'bewertungen': [],
+    'pricesInShops': [],
+    'urlsInShops': []
+}
 
-# collection names in cloud
 collection_names = {
     "fitmart.csv": "fitmart",
     "rockanutrition.csv": "rockanutrition",

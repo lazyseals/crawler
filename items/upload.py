@@ -7,21 +7,42 @@ import csv
 import os
 import re
 
-import dictionaries as d
-import shop_parser as sp
+from items import parser as sp, items as d
+from categories import categories
+from shops import shops
+
+# Store items to be uploaded
+# Has the form:
+# {
+#   'c1001': [{parsed_item_11},...,{parsed_item_1N}],
+#   ...
+#   'c5006': [{parsed_item_N1},...,{parsed_item_NN}]
+#  }
+items = {}
+
+# Last given iid to product
+iid = 1000
 
 
-def get_collection(collection, database="shops"):
+# Create categories dict to save items
+def create_items():
+    for category in categories:
+        items[category.cid] = []
+
+
+def get_database(database="items"):
     print('### GET MONGODB COLLECTION ###')
 
     client = MongoClient(
         "mongodb+srv://daniel:hrgvbdxUVW2baN8W@cluster0-ccevx.mongodb.net/test?retryWrites=true&w=majority")
     db = client[database]
-    col = db[collection]
 
-    print("Fetched: " + str(col))
+    print("Fetched: " + str(db))
 
-    return col
+    return db
+
+def get_collection(database, collection):
+    return database[collection]
 
 
 def parse_csv(file):
@@ -159,32 +180,24 @@ def print_missing_categories(shop):
     print("Missing Categories: " + str({k: shop[k] for k in set(shop) - replaced_categories}))
 
 
-def insert_new_products(file):
-    global current_shop
-    current_shop = d.collection_names[file]
-
-    # 1. Get database
-    col = get_collection(collection=d.collection_names[file])
-
-    # 2. Parse csv
-    documents = parse_csv("data/"+file)
-
-    # 3. Update collection
-    update_collection(col, documents, _upsert=True)
-
-
 def update_file(file):
     global current_shop
     current_shop = d.collection_names[file]
 
-    # 1. Get database
-    col = get_collection(collection=d.collection_names[file])
-
-    # 2. Parse csv
+    # 1. Parse csv
     documents = parse_csv("data/"+file)
 
-    # 3. Update collection
-    update_collection(col, documents)
+    # 2. Get database
+    db = get_database()
+
+    # Iterate over all categories in items
+    # Each collection in db items is a category
+    # Each category holds multiple items
+    for category in items:
+        # 3. Get collection
+        col = get_collection(db, d.collection_names[file])
+        # 4. Update collection
+        update_collection(col, documents, _upsert=True) # TODO: Teste, ob product-name in collection (Siehe schlaues Büchlein)
 
 
 def update_all_files():
@@ -204,8 +217,5 @@ new_products = []
 # Methods to update
 # update_all_files()
 # update_file("myprotein.csv")
-
-# Methods to insert
-insert_new_products("weider.csv")
 
 print_missing_categories(d.category_matching["weider"])

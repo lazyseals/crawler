@@ -1,4 +1,4 @@
-import dictionaries as d
+from items import items as d
 
 
 def parse_rocka(category, product):
