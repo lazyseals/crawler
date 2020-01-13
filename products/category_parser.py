@@ -1,4 +1,4 @@
-from items import items as d
+from products import items as d
 
 
 def parse_rocka(category, product):
@@ -227,7 +227,8 @@ def parse_weider(category, product):
         if "ace" in product or "mineralstack" in product or "megabolic" in product or "multi vita" in product\
                 or "joint caps" in product:
             return "Multivitamine"
-        elif "amino blast" in product or "amino nox" in product or "amino egg" in product or "amino powder" in product:
+        elif "amino blast" in product or "amino nox" in product or "amino egg" in product or "amino powder" in product\
+                or "amino essential" in product:
             return "Aminosäuren Komplex"
         elif "amino power liquid" in product or "bcaa rtd" in product or "eaa rtd" in product or "rush rtd" in product:
             return "Aminosäuren Getränke"
@@ -267,7 +268,7 @@ def parse_weider(category, product):
             return "Protein Drinks"
         elif "pump" in product or "rush" in product:
             return "Trainingsbooster"
-        elif "soj 80" in product:
+        elif "soy 80" in product:
             return "Sojaprotein"
         elif "thermo stack" in product:
             return "Fatburner"

@@ -164,6 +164,21 @@ categories = [
             'c3017', 'c3018', 'c3019'
         ]
     },  {
+        'cid': 'c3017',
+        'name': 'Trainingsbooster',
+        'main': False,
+        'subCategories': []
+    },  {
+        'cid': 'c3018',
+        'name': 'Energy Drinks',
+        'main': False,
+        'subCategories': []
+    },  {
+        'cid': 'c3019',
+        'name': 'Koffein',
+        'main': False,
+        'subCategories': []
+    },  {
         'cid': 'c3020',
         'name': 'Vitalstoffe',
         'main': True,

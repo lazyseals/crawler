@@ -3,6 +3,7 @@ possible_column_names = [
     'product-name',
     'product-url-href',
     'product-description-long',
+    'product-description-long-ul',
     'product-price',
     'product-size',
     'product-flavour',
@@ -23,6 +24,7 @@ attribute_to_mongocol = {
     'product-img-src': 'product-img',
     'product-name': 'product-name',
     'product-description-long': 'product-description-long',
+    'product-description-long-ul': 'product-description-long',
     'product-price': 'product-price',
     'product-size': 'product-size',
     'product-flavour': 'product-flavour',
@@ -32,35 +34,13 @@ attribute_to_mongocol = {
     'product-category': 'product-category'
 }
 
-# product item properties
-item = {
-    'iid': '',
-    'name': '',
-    'allergens': [],
-    'averageBewertung': None,
-    'descriptionLong': '',
-    'descriptionShort': '',
-    'flavours': [],
-    'img': '',
-    'nutritionImg': '',
-    'nutritionText': '',
-    'minPrice': '',
-    'minSize': '',
-    'popularity': None,
-    'shops': [],
-    'category': '',
-    'bewertungen': [],
-    'pricesInShops': [],
-    'urlsInShops': []
-}
-
 collection_names = {
-    "fitmart.csv": "fitmart",
-    "rockanutrition.csv": "rockanutrition",
-    "body_and_fit.csv": "bodyandfit",
-    "myprotein.csv": "myprotein",
-    "zecplus.csv": "zecplus",
-    "weider.csv": "weider"
+    "fitmart.csv": "Fitmart",
+    "rockanutrition.csv": "Rockanutrition",
+    "body_and_fit.csv": "Body And Fit",
+    "myprotein.csv": "Myprotein",
+    "zecplus.csv": "Zec+",
+    "weider.csv": "Weider"
 }
 
 category_bodyandfit = {
@@ -172,12 +152,12 @@ category_weider = {
 
 # match category from shop to site category
 category_matching = {
-    "bodyandfit": category_bodyandfit,
-    "rockanutrition": category_rockanutrition,
-    "fitmart": category_fitmart,
-    "myprotein": category_myprotein,
-    "zecplus": category_zecplus,
-    "weider": category_weider
+    "Body and Fit": category_bodyandfit,
+    "Rockanutrition": category_rockanutrition,
+    "Fitmart": category_fitmart,
+    "Myprotein": category_myprotein,
+    "Zec+": category_zecplus,
+    "Weider": category_weider
 }
 
 toparse_myprotein = [
@@ -212,7 +192,7 @@ toparse_zecplus = [
 ]
 
 toparse_weider = [
-    "proteine / eiweiss",
+    "proteine / eiweiß",
     "aminosäuren",
     "vitamine / mineralien",
     "weitere produkte",
