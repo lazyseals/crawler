@@ -58,7 +58,18 @@ def fetch_items_and_highest_iid():
             # 5. Get items from category
             cursor = col.find()
             for document in cursor:
-                item_list.append(document)
+                # Item schema
+                item = {'iid': document['iid'], 'name': document['name'], 'allergens': document['allergens'],
+                        'averageBewertung': document['averageBewertung'],
+                        'descriptionLong': document['descriptionLong'],
+                        'descriptionShort': document['descriptionShort'], 'flavours': document['flavours'],
+                        'img': document['img'], 'nutritionImg': document['nutritionImg'],
+                        'nutritionText': document['nutritionText'], 'minPrice': document['minPrice'],
+                        'minSize': document['minSize'], 'popularity': document['popularity'],
+                        'shops': document['shops'], 'category': document['category'],
+                        'bewertungen': document['bewertungen'], 'pricesInShops': document['pricesInShops'],
+                        'urlsInShops': document['urlsInShops']}
+                item_list.append(item)
         except StopIteration:
             print('Empty Cursor!')
 
@@ -152,9 +163,9 @@ def create_document(row, attr_positions):
     global items
 
     # Item schema
-    item = {'iid': '', 'name': '', 'allergens': [], 'averageBewertung': None, 'descriptionLong': '',
+    item = {'iid': '', 'name': '', 'allergens': [], 'averageBewertung': 0.0, 'descriptionLong': '',
             'descriptionShort': '', 'flavours': [], 'img': '', 'nutritionImg': '', 'nutritionText': '', 'minPrice': '',
-            'minSize': '', 'popularity': None, 'shops': [], 'category': '', 'bewertungen': [], 'pricesInShops': [],
+            'minSize': '', 'popularity': 1, 'shops': [], 'category': '', 'bewertungen': [], 'pricesInShops': [],
             'urlsInShops': []}
 
     # 1. Get shop id
@@ -208,6 +219,7 @@ def create_document(row, attr_positions):
         name_match = SequenceMatcher(None, item['name'], ip.parse_name(row[attr_positions['product-name']]))\
             .find_longest_match(0, len(item['name']), 0, len(ip.parse_name(row[attr_positions['product-name']])))
         item['name'] = item['name'][name_match.a: name_match.a + name_match.size]
+        item['averageBewertung'] = 0.0
         if (len(item['descriptionLong']) <
                 len(ip.parse_description_long(row[attr_positions['product-description-long']]))):
             item['descriptionLong'] = ip.parse_description_long(row[attr_positions['product-description-long']])
