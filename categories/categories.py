@@ -243,7 +243,7 @@ categories = [
         'subCategories': []
     },  {
         'cid': 'c3032',
-        'name': 'Omage-3',
+        'name': 'Omega-3',
         'main': False,
         'subCategories': []
     },  {

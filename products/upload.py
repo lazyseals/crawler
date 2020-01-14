@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from difflib import SequenceMatcher
 from pymongo import MongoClient
 
 import csv
@@ -24,14 +25,19 @@ items = {}
 iid = 1000
 
 
+def fetch_items():
+    create_items()
+    fetch_items_and_highest_iid()
+
+
 # Create categories dict to save products
 def create_items():
     for category in categories.categories:
         items[category['cid']] = []
 
 
-# Fetch highest iid from db
-def fetch_highest_iid():
+# Fetch highest iid from db and items
+def fetch_items_and_highest_iid():
     global iid
 
     # 2. Get database
@@ -44,9 +50,15 @@ def fetch_highest_iid():
         # 3. Get collection
         col = get_collection(db, category)
         try:
+            # 4. Get highest iid
             col_iid = col.find().sort([('iid', -1)]).limit(1).next()['iid'][-4:]
             iid = max(iid, int(col_iid))
             print('Highest iid: i' + str(iid))
+
+            # 5. Get items from category
+            cursor = col.find()
+            for document in cursor:
+                item_list.append(document)
         except StopIteration:
             print('Empty Cursor!')
 
@@ -90,7 +102,7 @@ def parse_csv(file):
 
             if iteration >= 1:
                 # Rockanutrition is parsed differently than other files because of scraper output
-                if file == "data/rockanutrition.csv":
+                if file == "../data/rockanutrition.csv":
                     # Remove commas inside quotes
                     row = re.sub(',(?=[^"]*"[^"]*(?:"[^"]*"[^"]*)*$)', ".", row[0])
                     row = row.split(',')
@@ -154,8 +166,12 @@ def create_document(row, attr_positions):
         sid = None
 
     item['name'] = ip.parse_name(row[attr_positions['product-name']])
-    item['category'], _replaced_categories = ip.parse_category(item['name'], current_shop,
-                                                               row[attr_positions['product-category']])
+    item['category'], _replaced_categories, dont_upload = ip.parse_category(item['name'], current_shop,
+                                                                           row[attr_positions['product-category']])
+
+    if dont_upload:
+        # Return if there are categories that shouldn't be uploaded
+        return
 
     if _replaced_categories is not None:
         replaced_categories = _replaced_categories
@@ -169,7 +185,7 @@ def create_document(row, attr_positions):
     else:
         cid = None
 
-    # 2. Check if product with name exists
+    # 3. Check if product with url or same name exists
     item_found = False
     print(row)
     for i in items[cid]:
@@ -177,43 +193,73 @@ def create_document(row, attr_positions):
             item = i
             item_found = True
             break
+        for sid_to_url in i['urlsInShops']:
+            if sid_to_url['url'] == row[attr_positions['product-url']]:
+                item = i
+                item_found = True
+                break
+        else:
+            continue
+        break
 
-    # 3. Update or insert item
+    # 4. Update or insert item
     if item_found:
         # item exists in products => Only update certain fields
+        name_match = SequenceMatcher(None, item['name'], ip.parse_name(row[attr_positions['product-name']]))\
+            .find_longest_match(0, len(item['name']), 0, len(ip.parse_name(row[attr_positions['product-name']])))
+        item['name'] = item['name'][name_match.a: name_match.a + name_match.size]
+        if (len(item['descriptionLong']) <
+                len(ip.parse_description_long(row[attr_positions['product-description-long']]))):
+            item['descriptionLong'] = ip.parse_description_long(row[attr_positions['product-description-long']])
+        try:
+            if (len(item['descriptionShort']) <
+                    len(ip.parse_description_short(row[attr_positions['product-description-short']]))):
+                item['descriptionShort'] = ip.parse_description_short(row[attr_positions['product-description-short']])
+        except KeyError:
+            pass  # Leave description short empty
+        if (ip.parse_nutrition(row[attr_positions['product-nutrition']]) and len(item['nutritionText']) <
+                len(row[attr_positions['product-nutrition']])):
+            item['nutritionText'] = row[attr_positions['product-nutrition']]
         if ip.parse_flavour(row[attr_positions['product-flavour']]) not in item['flavours']:
             item['flavours'].append(ip.parse_flavour(row[attr_positions['product-flavour']]))
         item['minPrice'] = min(ip.parse_price(row[attr_positions['product-price']]), item['minPrice'])
-        item['minSize'] = min(row[attr_positions['product-size']], item['minSize'])
+        try:
+            item['minSize'] = ip.parse_size(row[attr_positions['product-size']])
+        except KeyError:
+            # Try to get size from name
+            item['minSize'] = ip.parse_size_from_name(row[attr_positions['product-name']])
         if sid not in item['shops']:
             item['shops'].append(sid)
-            item['pricesInShops'] = {'sid': sid, 'price': ip.parse_price(row[attr_positions['product-price']])}
+            item['pricesInShops'].append({'sid': sid, 'price': ip.parse_price(row[attr_positions['product-price']])})
             item['urlsInShops'].append({'sid': sid, 'url': row[attr_positions['product-url']]})
 
     else:
         # Insert new item in products
 
-        # 3.1 Extract information from row
+        # 4.1 Extract information from row
         item['allergens'] = ip.parse_allergens(row[attr_positions['product-allergens']])
         item['descriptionLong'] = ip.parse_description_long(row[attr_positions['product-description-long']])
         try:
             item['descriptionShort'] = ip.parse_description_short(row[attr_positions['product-description-short']])
         except KeyError:
             pass  # Leave description short empty
-        item['flavours'] = ip.parse_flavour(row[attr_positions['product-flavour']])
+        item['flavours'].append(ip.parse_flavour(row[attr_positions['product-flavour']]))
         item['img'] = ip.parse_img(row[attr_positions['product-img']])
         if ip.parse_nutrition(row[attr_positions['product-nutrition']]):
             item['nutritionImg'] = row[attr_positions['product-nutrition']]
         else:
             item['nutritionText'] = row[attr_positions['product-nutrition']]
         item['minPrice'] = ip.parse_price(row[attr_positions['product-price']])
-        item['minSize'] = ip.parse_size(row[attr_positions['product-size']])
+        try:
+            item['minSize'] = ip.parse_size(row[attr_positions['product-size']])
+        except KeyError:
+            item['minSize'] = ip.parse_size_from_name(row[attr_positions['product-name']])
         item['popularity'] = 1
-        item['shops'] = [sid]
-        item['pricesInShops'] = {'sid': sid, 'price': ip.parse_price(row[attr_positions['product-price']])}
-        item['urlsInShops'] = {'sid': sid, 'url': row[attr_positions['product-url']]}
+        item['shops'].append(sid)
+        item['pricesInShops'].append({'sid': sid, 'price': ip.parse_price(row[attr_positions['product-price']])})
+        item['urlsInShops'].append({'sid': sid, 'url': row[attr_positions['product-url']]})
 
-        # 3.2 Add item to products
+        # 4.2 Add item to products
         items[cid].append(item)
 
     print("Created document: " + str(item))
@@ -287,8 +333,7 @@ current_shop = ""
 replaced_categories = set()
 new_products = []
 
-create_items()
-fetch_highest_iid()
+fetch_items()
 
 # Methods to update
 # update_all_files()

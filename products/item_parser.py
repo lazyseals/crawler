@@ -12,11 +12,43 @@ def parse_name(name: str):
         'Weider\n Soy 80+ Protein'
     ]
 
+    # Name matching
+    names = [
+        'Rocka Whey Isolate',
+        'Yum Yum Whey',
+        'Rocka Milk',
+        'The Vegan',
+        'Yum Yum EAA',
+        'Over the Top',
+        'Pink Power',
+        'Play Hard Pump Booster',
+        'Work Hard Mind Booster',
+        'Alina\'s Pink Essentials',
+        'Smacktastic Flav Powder',
+        'Smacktastic 2GO',
+        'Smacktastic Cream',
+        'Sauce Zero',
+        'Rocka Milk Shake',
+        'Swish',
+        'Juicy Whey',
+        'Rockalicious',
+        'Light Chips',
+        'Slim Sin',
+        'Smacktastic Syrup',
+        'Smacktastic Ice Cream'
+    ]
+
     number_pattern = re.compile(r'(\b\d+(?:[\.,]\d+)?\b(?!(?:[\.,]\d+)|(?:\s*(?:%|percent))))')
 
     # Parse out linebreaks
     name = re.sub("/\r?\n|\r/", "", name)
     name = re.sub('"', '', name)
+
+    # Parse out flavours
+    for n in names:
+        if n in name:
+            name = n
+            break
 
     # Match numbers in name and remove everything after that number
     if name not in exceptions and number_pattern.search(name):
@@ -138,11 +170,39 @@ def parse_size(size: str):
     return size.split('\n', 1)[0]
 
 
+def parse_size_from_name(name: str):
+    number_pattern = re.compile(r'(\b\d+(?:[\.,]\d+)?\b(?!(?:[\.,]\d+)|(?:\s*(?:%|percent))))')
+
+    # Parse out linebreaks
+    name = re.sub("/\r?\n|\r/", "", name)
+    name = re.sub('"', '', name)
+
+    # Match numbers in name and remove everything before that number
+    if number_pattern.search(name):
+        sep = number_pattern.search(name).group(0)
+        return name.split(sep)[0]
+
+    # Return empty size else
+    return ''
+
+
 def parse_category(product_name: str, current_shop: str, category: str):
+    # Exceptions that will be ignored for upload
+    exceptions = [
+        'dlg-prämiert',
+        'post-workout'
+    ]
+
+    # Parse out linebreaks
+    category = re.sub("/\r?\n|\r/", "", category)
+    category = re.sub('"', '', category)
+
     replaced_category = None
-    if category.lower() in d.category_matching[current_shop]:
+    if category.lower() in exceptions:
+        return '', replaced_category, True
+    elif category.lower() in d.category_matching[current_shop].keys():
         replaced_category = category.lower()
-        return d.category_matching[current_shop][category.lower()], replaced_category
+        return d.category_matching[current_shop][category.lower()], replaced_category, False
     else:
         if current_shop == 'Rockanutrition':
             category = sp.parse_rocka(category, product_name)
@@ -155,4 +215,4 @@ def parse_category(product_name: str, current_shop: str, category: str):
         elif current_shop == "Weider":
             category = sp.parse_weider(category, product_name)
 
-        return category, replaced_category
+        return category, replaced_category, False

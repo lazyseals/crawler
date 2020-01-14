@@ -72,16 +72,21 @@ category_rockanutrition = {
     "omega 3": "Omega-3",
     "geschmackspulver": "Aromen und Süßstoffe",
     "creams & jams": "Aufstriche",
-    "pancakes": "backmischungen",
+    "pancakes": "Backmischungen",
     "muffins & waffeln": "Backmischungen",
-    "kokosöl": "speiseöle",
+    "kokosöl": "Speiseöle",
     "saucen & gewürze": "Gewürze & Saucen",
     "protein eis": "Proteineis",
     "light chips": "Chips",
     "rocka whey isolate": "Whey Protein",
     "yum yum whey": "Whey Protein",
     "rocka milk": "Casein Protein",
-    "the vegan": "Veganes Protein"
+    "the vegan": "Veganes Protein",
+    "proteinriegel": "Proteinriegel",
+    "schokolade": "Schokolade",
+    "syrup": "Syrup",
+    "pizza & pasta": "Pizza & Pasta",
+    "creatin": "Creatin"
 }
 
 category_fitmart = {
