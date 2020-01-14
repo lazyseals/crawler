@@ -30,35 +30,43 @@ def parse_fitmart(category, product):
     product = product.lower()
     category = category.lower()
 
-    if category == 'protein snack' or category == 'low carb snack' or category == 'low carb lebensmittel':
-        if 'dream' in product or 'creme' in product or 'spread' in product or 'choc' in product or 'cream' in product or \
-                'butter' in product or 'plantation' in product or 'walden' in product:
-            return 'Aufstriche'
-        elif 'chips' in product or 'flips' in product or 'nachos' in product:
-            return 'Chips'
-        elif 'pasta' in product or 'pizza' in product:
-            return 'Pizza & Pasta'
+    if category in d.toparse_fitmart:
+        if 'brötchen' in product:
+            return 'Brot'
         elif 'brownie' in product or 'pancakes' in product or 'waffles' in product or 'mischung' in product:
             return 'Backmischungen'
-        elif product or 'pudding':
-            return 'Pudding'
-        elif 'muffin' in product or 'cookie' in product:
-            return 'Cookies & Muffins'
         elif 'candy' in product:
             return 'Süßigkeiten'
-        elif 'truffle' in product or 'riegel' in product or 'waffel' in product or 'snack' in product:
+        elif 'chips' in product or 'flips' in product or 'nachos' in product:
+            return 'Chips'
+        elif 'crank' in product:
+            return 'Trainingsbooster'
+        elif 'crispies' in product:
+            return 'Getreide'
+        elif 'dream' in product or 'creme' in product or 'spread' in product or 'choc' in product or 'cream' in product or \
+                'butter' in product or 'plantation' in product or 'walden' in product:
+            return 'Aufstriche'
+        elif 'muffin' in product or 'cookie' in product:
+            return 'Cookies & Muffins'
+        elif 'pasta' in product or 'pizza' in product:
+            return 'Pizza & Pasta'
+        elif 'pudding' in product:
+            return 'Pudding'
+        elif 'truffle' in product or 'riegel' in product or 'waffel' in product or 'snack' in product or \
+                'bar' in product:
             return 'Schokolade'
-        elif 'sauce' in product:
+        elif 'sauce' in product or 'callowfit' in product:
             return 'Gewürze & Saucen'
         elif 'zerup' in product or 'sirup' in product or 'syrup' in product:
             return 'Syrup'
-        elif 'brötchen' in product:
-            return 'Brot'
 
 
 def parse_myprotein(category, product):
     product = product.lower()
     category = category.lower()
+
+    print(product)
+    print(category)
 
     if category in d.toparse_myprotein:
         if 'aakg' in product:
@@ -67,15 +75,21 @@ def parse_myprotein(category, product):
             return 'Aufstriche'
         elif 'antioxidant' in product or 'maca' in product:
             return 'Antioxidantien'
+        elif 'bar' in product or 'rocky road' in product or 'carb crusher' in product or 'flapjack' in product:
+            return 'Proteinriegel'
         elif 'beeren' in product:
             return 'Beeren'
         elif 'bcaa drink' in product or 'protein wasser' in product:
             return 'Protein Drinks'
         elif 'beta-alanin' in product:
             return 'Beta Alanin'
+        elif 'bohnen' in product:
+            return 'Bohnen'
+        elif 'casein' in product:
+            return 'Casein Protein'
         elif 'choc' in product or 'schokolade' in product:
             return 'Schokolade'
-        elif 'chromium' in product or 'elektrolyte' in product or 'eisen' in product:
+        elif 'chromium' in product or 'electrolyte' in product or 'eisen' in product:
             return 'Mineralstoffe'
         elif 'citrullin' in product:
             return 'Citrullin'
@@ -91,13 +105,23 @@ def parse_myprotein(category, product):
             return 'EAA'
         elif 'eiklar' in product:
             return 'Eiklar'
-        elif 'fat binder' in product or 'thermo-x' in product or 'diet aid' in product or 'thermopure boost' in product\
+        elif 'erbsenprotein' in product:
+            return 'Erbsenprotein'
+        elif 'fat binder' in product or 'thermo' in product or 'diet aid' in product or 'thermopure boost' in product\
                 or 'glucomannan' in product or 'diet gel' in product:
             return 'Fatburner'
+        elif 'fiber' in product:
+            return 'Superfoods'
+        elif 'flavdrop' in product:
+            return 'Aromen und Süßstoffe'
+        elif 'gel' in product:
+            return 'Weitere'
         elif 'glucosamin' in product:
             return 'Glucosamin'
         elif 'glucose' in product or 'dextrin carbs' in product or 'palatinose' in product:
             return 'Kohlenhydratpulver'
+        elif 'glutamin' in product:
+            return 'Glutamin'
         elif 'granola' in product or 'crispies' in product or 'oats' in product or 'hafer' in product:
             return 'Getreide'
         elif 'hmb' in product:
@@ -110,8 +134,8 @@ def parse_myprotein(category, product):
             return 'Magnesium'
         elif 'mahlzeitenersatz' in product:
             return 'Mahlzeitenersatz-Shakes'
-        elif 'maltrodextrin' in product:
-            return 'Maltrodextrin'
+        elif 'maltodextrin' in product:
+            return 'Maltodextrin'
         elif 'mandeln' in product or 'samen' in product or 'nüsse' in product or 'nut' in product:
             return 'Nüsse & Samen'
         elif 'öl' in product:
@@ -120,14 +144,21 @@ def parse_myprotein(category, product):
             return 'Ornithin'
         elif 'pancake' in product or 'cake' in product:
             return 'Backmischungen'
+        elif 'performance mix' in product or 'recovery blend' in product or 'collagen protein' in product or \
+                'dessert' in product:
+            return 'Protein Mischungen'
         elif 'phosphatidylserin' in product or 'leucin' in product or 'tribulus' in product:
             return 'Planzliche Nahrungsergänzungsmittel'
         elif 'pork crunch' in product:
             return 'Jerkey'
-        elif 'pre-workout' in product or 'pump' in product:
+        elif 'pre-workout' in product or 'pump' in product or 'pre workout' in product:
             return 'Trainingsbooster'
+        elif 'reis' in product:
+            return 'Alltägliche Lebensmittel'
         elif 'sirup' in product:
             return 'Syrup'
+        elif "soja protein" in product:
+            return "Sojaprotein"
         elif 'soße' in product:
             return 'Gewürze & Saucen'
         elif 'spaghetti' in product or 'penne' in product or 'fettuccine' in product:
@@ -136,14 +167,21 @@ def parse_myprotein(category, product):
             return 'Taurin'
         elif 'tyrosin' in product:
             return 'Tyrosin'
+        elif 'veganes performance bundle' in product:
+            return 'Veganes Protein'
         elif 'vitamin b' in product:
             return 'Vitamin B'
-        elif 'vitamins bundle' in product:
+        elif 'vitamins bundle' in product or 'multivitamin' in product or 'immunity plus' in product or \
+                'the multi' in product:
             return 'Multivitamine'
         elif 'vitamin c' in product:
             return 'Vitamin C'
         elif 'vitamin d' in product:
             return 'Vitamin D'
+        elif 'waffel' in product or 'protein ball' in product:
+            return 'Schokolade'
+        elif 'whey' in product:
+            return 'Whey Protein'
         elif 'zink' in product:
             return 'Zink'
         elif 'bcaa' in product or 'amino' in product:  # Many product with amino in -> Make sure this is the last
@@ -163,7 +201,7 @@ def parse_zecplus(category, product):
             return "Arginin"
         elif "aroma" in product:
             return "Aromen und Süßstoffe"
-        elif "athro" in product:
+        elif "arthro" in product:
             return "Glucosamin"
         elif "bcaa" in product:
             return "BCAA"
@@ -173,6 +211,8 @@ def parse_zecplus(category, product):
             return "Casein Protein"
         elif "citrullin" in product:
             return "Citrullin"
+        elif "creatin" in product:
+            return "Creatin"
         elif "dextrose" in product:
             return "Dextrose"
         elif "eaa" in product:
@@ -183,8 +223,12 @@ def parse_zecplus(category, product):
             return "Gaba"
         elif "gainer" in product:
             return "Weight Gainer"
+        elif "glutamin" in product:
+            return "Glutamin"
         elif "greens" in product:
             return "Pflanzliche Nahrungsergänzungsmittel"
+        elif "kickdown" in product or "testosteron booster" in product:
+            return "Trainingsbooster"
         elif "koffein" in product:
             return "Koffein"
         elif "kohlenhydrate" in product:
@@ -192,9 +236,9 @@ def parse_zecplus(category, product):
         elif "kokosöl" in product:
             return "Speiseöle"
         elif "liquid egg" in product:
-            return "eiklar"
-        elif "maltrodextrin" in product:
-            return "Maltrodextrin"
+            return "Eiklar"
+        elif "maltodextrin" in product:
+            return "Maltodextrin"
         elif "mehrkomponenten" in product:
             return "Protein Mischungen"
         elif "nährstoff optimizer" in product or "sleep" in product:

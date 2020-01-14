@@ -293,34 +293,43 @@ def update_collection(col, documents):
 
 
 # Updates single file
-def update_file(file):
+def update_file(file, update_all=False):
     global current_shop
     current_shop = d.collection_names[file]
 
     # 1. Parse csv
     parse_csv("../data/"+file)
 
-    # 2. Get database
-    db = get_database()
+    # If update all files at once, than upload items only ones inside upload all files method
+    if not update_all:
 
-    # Iterate over all categories in products
-    # Each collection in db products is a category
-    # Each category holds multiple products
+        # 2. Get database
+        db = get_database()
+
+        # Iterate over all categories in products
+        # Each collection in db products is a category
+        # Each category holds multiple products
+        for category, item_list in items.items():
+            # 3. Get collection
+            col = get_collection(db, category)
+            # 4. Update collection
+            update_collection(col, item_list)
+
+
+# Updates all files in data
+def update_all_files():
+    dir = os.fsencode("../data")
+    for file in os.listdir(dir):
+        filename = os.fsdecode(file)
+        if filename.endswith(".csv"):
+            print("### PROCESS: " + filename + " ###")
+            update_file(filename, update_all=True)
+    db = get_database()
     for category, item_list in items.items():
         # 3. Get collection
         col = get_collection(db, category)
         # 4. Update collection
         update_collection(col, item_list)
-
-
-# Updates all files in data
-def update_all_files():
-    dir = os.fsencode("data")
-    for file in os.listdir(dir):
-        filename = os.fsdecode(file)
-        if filename.endswith(".csv"):
-            print("### PROCESS: " + filename + " ###")
-            update_file(filename)
 
 
 # Prints categories which weren't parsed even they were declared to be
@@ -336,7 +345,7 @@ new_products = []
 fetch_items()
 
 # Methods to update
-# update_all_files()
-update_file("weider.csv")
+update_all_files()
+# update_file("myprotein.csv")
 
 # print_missing_categories(d.category_matching["weider"])

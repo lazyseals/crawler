@@ -290,7 +290,7 @@ categories = [
         'subCategories': []
     },  {
         'cid': 'c3041',
-        'name': 'Maltrodextrin',
+        'name': 'Maltodextrin',
         'main': False,
         'subCategories': []
     },  {

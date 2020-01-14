@@ -11,10 +11,13 @@
     "https://de.myprotein.com/nutrition/creatine/creatine-monohydrate.list",
     "https://de.myprotein.com/nutrition/weight-management/weight-gainers.list",
     "https://de.myprotein.com/nutrition/weight-management/weight-loss-supplements.list",
+    "https://de.myprotein.com/nutrition/weight-management/weight-loss-shakes.list",
     "https://de.myprotein.com/nutrition/pre-post-workout/pre-workout.list",
     "https://de.myprotein.com/nutrition/pre-post-workout/intra-workout.list",
+    "https://de.myprotein.com/nutrition/pre-post-workout/post-workout.list",
     "https://de.myprotein.com/nutrition/carbohydrates/energy-supplements.list",
     "https://de.myprotein.com/nutrition/carbohydrates/energy-bars.list",
+    "https://de.myprotein.com/nutrition/carbohydrates/energy-gels.list",
     "https://de.myprotein.com/nutrition/carbohydrates/energy-drinks.list",
     "https://de.myprotein.com/nutrition/healthy-food-drinks/protein-bars.list",
     "https://de.myprotein.com/nutrition/healthy-food-drinks/nut-butters.list",
@@ -137,7 +140,7 @@
         "flavour-click"
       ],
       "selector": "div#product-description-content-7 strong:not(:first-child)",
-      "multiple": false,
+      "multiple": true,
       "regex": "",
       "delay": 0
     },

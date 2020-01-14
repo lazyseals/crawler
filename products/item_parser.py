@@ -9,7 +9,9 @@ def parse_name(name: str):
     # For exceptions the number match is not executed because the number is part of the product name
     exceptions = [
         'Weider\n Protein 80 Plus',
-        'Weider\n Soy 80+ Protein'
+        'Weider\n Soy 80+ Protein',
+        'GOT7',
+        'NO2'
     ]
 
     # Name matching
@@ -35,10 +37,12 @@ def parse_name(name: str):
         'Light Chips',
         'Slim Sin',
         'Smacktastic Syrup',
-        'Smacktastic Ice Cream'
+        'Smacktastic Ice Cream',
+        'Clean Concentrate'
     ]
 
     number_pattern = re.compile(r'(\b\d+(?:[\.,]\d+)?\b(?!(?:[\.,]\d+)|(?:\s*(?:%|percent))))')
+    weight_pattern = re.compile(r'(\d*\.?\d+)\s?(\w+)')
 
     # Parse out linebreaks
     name = re.sub("/\r?\n|\r/", "", name)
@@ -46,13 +50,22 @@ def parse_name(name: str):
 
     # Parse out flavours
     for n in names:
-        if n in name:
+        if n.lower() in name.lower():
             name = n
             break
 
     # Match numbers in name and remove everything after that number
-    if name not in exceptions and number_pattern.search(name):
+    found_exception = False
+    for exc in exceptions:
+        if exc in name:
+            found_exception = True
+            break
+
+    if not found_exception and number_pattern.search(name):
         sep = number_pattern.search(name).group(0)
+        name = name.split(sep, 1)[0]
+    elif not found_exception and weight_pattern.search(name):
+        sep = weight_pattern.search(name).group(0)
         name = name.split(sep, 1)[0]
 
     return name
@@ -190,7 +203,21 @@ def parse_category(product_name: str, current_shop: str, category: str):
     # Exceptions that will be ignored for upload
     exceptions = [
         'dlg-prämiert',
-        'post-workout'
+        'post-workout',
+        'post workout',
+        'intra-workout'
+    ]
+
+    fitmart_exceptions = [
+        'intra-workout',
+        'pre-workout',
+        'gewichtsreduktion spezial',
+        'müsli-zutaten',
+        'pulver',
+        'spezial',
+        'tribulus terrestris',
+        'maca',
+        'asparaginsäure'
     ]
 
     # Parse out linebreaks
@@ -198,7 +225,9 @@ def parse_category(product_name: str, current_shop: str, category: str):
     category = re.sub('"', '', category)
 
     replaced_category = None
-    if category.lower() in exceptions:
+    if category.lower() in exceptions or (category.lower() in fitmart_exceptions and current_shop == 'Fitmart')\
+            or product_name.lower() == 'null' or (product_name == '') or \
+            ('bundle' in product_name.lower()):
         return '', replaced_category, True
     elif category.lower() in d.category_matching[current_shop].keys():
         replaced_category = category.lower()
@@ -206,7 +235,7 @@ def parse_category(product_name: str, current_shop: str, category: str):
     else:
         if current_shop == 'Rockanutrition':
             category = sp.parse_rocka(category, product_name)
-        elif current_shop == 'fitmart':
+        elif current_shop == 'Fitmart':
             category = sp.parse_fitmart(category, product_name)
         elif current_shop == 'Myprotein':
             category = sp.parse_myprotein(category, product_name)
