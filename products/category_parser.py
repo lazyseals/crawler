@@ -65,9 +65,6 @@ def parse_myprotein(category, product):
     product = product.lower()
     category = category.lower()
 
-    print(product)
-    print(category)
-
     if category in d.toparse_myprotein:
         if 'aakg' in product:
             return 'AAKG'
@@ -151,7 +148,7 @@ def parse_myprotein(category, product):
             return 'Planzliche Nahrungsergänzungsmittel'
         elif 'pork crunch' in product:
             return 'Jerkey'
-        elif 'pre-workout' in product or 'pump' in product or 'pre workout' in product:
+        elif 'pre-workout' in product or 'pump' in product or 'pre workout' in product or 'preworkout' in product:
             return 'Trainingsbooster'
         elif 'reis' in product:
             return 'Alltägliche Lebensmittel'
@@ -191,6 +188,9 @@ def parse_myprotein(category, product):
 def parse_zecplus(category, product):
     product = product.lower()
     category = category.lower()
+
+    print(product)
+    print(category)
 
     if category in d.toparse_zecplus:
         if "all in one" in product:
@@ -247,12 +247,16 @@ def parse_zecplus(category, product):
             return "Pizza & Pasta"
         elif "oats" in product:
             return "Getreide"
+        elif "proteinriegel" in product:
+            return "Proteinriegel"
         elif "reis protein" in product:
             return "Reisprotein"
-        elif "pulvermischung" in product or "pancakes" in product:
+        elif "pulvermischung" in product or "pancakes" in product or 'bratlinge' in product:
             return "Backmischungen"
-        elif "tryptophan" in product or "intraplus" in product:
+        elif "tryptophan" in product or "intraplus" in product or 'leucin' in product:
             return "Aminosäuren Komplex"
+        elif "vitamin b" in product:
+            return "Vitamin B"
         elif "vitamin c" in product:
             return "Vitamin C"
         elif "vitamin d" in product:
