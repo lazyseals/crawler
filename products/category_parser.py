@@ -1,11 +1,36 @@
 from products import items as d
 
+# Foreach shop a unique parser must be written that executes the following steps:
+# 1. Category name and product name to lower case
+# 2. Check if a product in category name needs to be replaced by a mister m category
+# 3. Determine mister m category based on a pattern in the product name
+#
+# In order to integrate a new shop into the parser
+# the following additional steps are required to make the previously defined steps working:
+# For step 2: Define a dict in items.py with the following naming scheme: toparse_<shopname>
+#   -> This dict contains categories that hold product which belong at least into 2 different mister m categories
+# For step 3: Define a if/elif structure with pattern matching in product name to determine the mister m category
+#   -> Foreach mister m category define exactly 1 if or elif case
+#   -> Sort the if/elif structure alphabetically
+#
+# If 1 shop is excluded from category matching based on product name, then mention it here with a short reason why
+#   - Body and Fit: All categories that are parsed define a mister m category
+#
+#
+# TODO: Allow product to be in multiple categories
 
+# Match categories from shop rockanutrition to mister m categories.
+# Matching based on product name.
 def parse_rocka(category, product):
+    # Product name to lower case for better string matching
     product = product.lower()
+    # Category name to lower case for better string matching
     category = category.lower()
 
+    # Check if product category needs to be placed into another category
     if category == 'vitamine & minerale' or category == 'drinks' or category == 'bake & cook':
+
+        # Check product name for patterns in order to replace category with mister m category
         if 'vitamin b' in product:
             return 'Vitamin B'
         elif 'vitamin d' in product:
@@ -26,11 +51,18 @@ def parse_rocka(category, product):
             return 'Backmischungen'
 
 
+# Match categories from shop fitmart to mister m categories.
+# Matching based on product name.
 def parse_fitmart(category, product):
+    # Product name to lower case for better string matching
     product = product.lower()
+    # Category name to lower case for better string matching
     category = category.lower()
 
+    # Check if product category needs to be placed into another category
     if category in d.toparse_fitmart:
+
+        # Check product name for patterns in order to replace category with mister m category
         if 'brötchen' in product:
             return 'Brot'
         elif 'brownie' in product or 'pancakes' in product or 'waffles' in product or 'mischung' in product:
@@ -61,11 +93,18 @@ def parse_fitmart(category, product):
             return 'Syrup'
 
 
+# Match categories from shop myprotein to mister m categories.
+# Matching based on product name.
 def parse_myprotein(category, product):
+    # Product name to lower case for better string matching
     product = product.lower()
+    # Category name to lower case for better string matching
     category = category.lower()
 
+    # Check if product category needs to be placed into another category
     if category in d.toparse_myprotein:
+
+        # Check product name for patterns in order to replace category with mister m category
         if 'aakg' in product:
             return 'AAKG'
         elif 'aufstrich' in product or 'butter' in product or 'dip pot' in product:
@@ -185,14 +224,18 @@ def parse_myprotein(category, product):
             return 'BCAA'
 
 
+# Match categories from shop zecplus to mister m categories.
+# Matching based on product name.
 def parse_zecplus(category, product):
+    # Product name to lower case for better string matching
     product = product.lower()
+    # Category name to lower case for better string matching
     category = category.lower()
 
-    print(product)
-    print(category)
-
+    # Check if product category needs to be placed into another category
     if category in d.toparse_zecplus:
+
+        # Check product name for patterns in order to replace category with mister m category
         if "all in one" in product:
             return "Multivitamine"
         elif "antioxidan" in product:
@@ -267,11 +310,18 @@ def parse_zecplus(category, product):
             return "Zink"
 
 
+# Match categories from shop zecplus to mister m categories.
+# Matching based on product name.
 def parse_weider(category, product):
+    # Product name to lower case for better string matching
     product = product.lower()
+    # Category name to lower case for better string matching
     category = category.lower()
 
+    # Check if product category needs to be placed into another category
     if category in d.toparse_weider:
+
+        # Check product name for patterns in order to replace category with mister m category
         if "ace" in product or "mineralstack" in product or "megabolic" in product or "multi vita" in product\
                 or "joint caps" in product:
             return "Multivitamine"
