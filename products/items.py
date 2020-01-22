@@ -1,4 +1,8 @@
-# column names which may appear in row
+########################################################################################################################
+# 1. Scraper attributes to item model
+########################################################################################################################
+
+# All column names which may appear in row
 possible_column_names = [
     'product-name',
     'product-url-href',
@@ -16,7 +20,9 @@ possible_column_names = [
     'product-category'
 ]
 
-# match html attribute elements to real mongodb columsn which will be added
+# Match html attribute elements to real mongodb columns that will be added.
+# Necessary, because scraper extracts attributes named as html elements, but these hold the needed values.
+# Example: Model attribute "product-url" can be extracted from scraper attribute "product-url-href".
 attribute_to_mongocol = {
     'product-url-href': 'product-url',
     'product-nutrition-src': 'product-nutrition',
@@ -34,6 +40,11 @@ attribute_to_mongocol = {
     'product-category': 'product-category'
 }
 
+# Match <shop>.csv with the collection names used in this parser.
+# Is used because of historical reasons:
+# In the first version of the parser all products were stored in collections sorted by the shop providing them.
+# In later versions this has been changed to collections sorted into categories.
+# It has been left, because the whole algorithm is based on the collection names defined in this dict.
 collection_names = {
     "fitmart.csv": "Fitmart",
     "rockanutrition.csv": "Rockanutrition",
@@ -43,6 +54,13 @@ collection_names = {
     "weider.csv": "Weider"
 }
 
+########################################################################################################################
+# 2. Categories directly fitting into a mister m category
+#    -> These categories may not hold the target mister m name,
+#       but important, only products that belong in the same mister m category
+########################################################################################################################
+
+# Body and fit category name to mister m category name
 category_bodyandfit = {
     "whey protein": "Whey Protein",
     "casein-protein": "Casein Protein",
@@ -99,6 +117,7 @@ category_bodyandfit = {
     "mahlzeitersetzende shakes": "Mahlzeitenersatz-Shakes"
 }
 
+# Rockanutrition category name to mister m category name
 category_rockanutrition = {
     "aminosäuren": "EAA",
     "pre-workout": "Trainingsbooster",
@@ -122,6 +141,7 @@ category_rockanutrition = {
     "creatin": "Creatin"
 }
 
+# Fitmart category name to mister m category name
 category_fitmart = {
     "mehrkomponenten protein": "Protein Mischungen",
     "soja protein": "Sojaprotein",
@@ -199,6 +219,7 @@ category_fitmart = {
     "gelenknahrung": "Probiotika"
 }
 
+# Myprotein category name to mister m category name
 category_myprotein = {
     "whey protein": "Whey Protein",
     "milcheiweiß & casein": "Casein Protein",
@@ -217,6 +238,7 @@ category_myprotein = {
     "protein drinks": "Protein Drinks"
 }
 
+# Zecplus category name to mister m category name
 category_zecplus = {
     "creatine": "Creatin",
     "mhd-ware": "Antioxidantien",
@@ -225,6 +247,7 @@ category_zecplus = {
     "fatburner": "Fatburner"
 }
 
+# Weider category name to mister m category name
 category_weider = {
     "kohlenhydrate / weight gainer": "Weight Gainer",
     "kreatin": "Creatin",
@@ -233,7 +256,7 @@ category_weider = {
     "l-carnitine": "Carnitin"
 }
 
-# match category from shop to site category
+# Matches the collection names (Defined above in section 1) to the categories that directly fit into a mister m category
 category_matching = {
     "Body and Fit": category_bodyandfit,
     "Rockanutrition": category_rockanutrition,
@@ -243,12 +266,19 @@ category_matching = {
     "Weider": category_weider
 }
 
+########################################################################################################################
+# 3. Categories to be parsed by category parser
+#    -> These categories hold at least 2 products that belong into a different mister m category
+########################################################################################################################
+
+# Fitmart category names that need to be parsed by category parser
 toparse_fitmart = [
     'protein snack',
     'low carb snacks',
     'low carb lebensmittel'
 ]
 
+# Myprotein category names that need to be parsed by category parser
 toparse_myprotein = [
     "bcaa",
     "pillen & supplemente zur gewichtsabnahme",
@@ -267,6 +297,7 @@ toparse_myprotein = [
     "ballaststoff-supplemente"
 ]
 
+# Zecplus category names that need to be parsed by category parser
 toparse_zecplus = [
     "aminosäuren",
     "fettsäuren",
@@ -280,6 +311,7 @@ toparse_zecplus = [
     "vitamine&mineralien"
 ]
 
+# Weider category names that need to be parsed by category parser
 toparse_weider = [
     "proteine / eiweiß",
     "aminosäuren",
