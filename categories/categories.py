@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# Category schema looks as follows:
+# category = {cid, name, main, [subCategories]}
+
+
+# Categories that are available in mister m webapp.
 categories = [
     {
         'cid': 'c2001',

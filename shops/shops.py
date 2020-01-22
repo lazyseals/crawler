@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# Shop schema looks as follows:
+# shop = {sid, name, img, shipping, shippingFree, deliveryTime, affiliateLink}
+
+
+# Shops that are available in mister m webapp.
 shops = [
     {
         'sid': 's1001',
