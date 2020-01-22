@@ -94,15 +94,12 @@ def create_document(row, attr_positions, current_shop, items):
         sid = None
 
     item['name'] = ip.parse_name(row[attr_positions['product-name']])
-    item['category'], _replaced_categories, dont_upload = ip.parse_category(item['name'], current_shop,
-                                                                           row[attr_positions['product-category']])
+    item['category'], dont_upload = ip.parse_category(item['name'], current_shop,
+                                                      row[attr_positions['product-category']])
 
     if dont_upload:
         # Return if there are categories that shouldn't be uploaded
         return
-
-    if _replaced_categories is not None:
-        replaced_categories = _replaced_categories
 
     # 2. Get category id
     for category in categories.categories:
@@ -133,6 +130,9 @@ def create_document(row, attr_positions, current_shop, items):
     # 4. Update or insert item
     if item_found:
         # item exists in products => Only update certain fields
+        if not isinstance(item['allergens'], str):
+            item['allergens'] = item['allergens'] + list(
+                set(ip.parse_allergens(row[attr_positions['product-allergens']], cid)) - set(item['allergens']))
         name_match = SequenceMatcher(None, item['name'], ip.parse_name(row[attr_positions['product-name']]))\
             .find_longest_match(0, len(item['name']), 0, len(ip.parse_name(row[attr_positions['product-name']])))
         item['name'] = item['name'][name_match.a: name_match.a + name_match.size]
@@ -149,7 +149,8 @@ def create_document(row, attr_positions, current_shop, items):
         isImg, nutritionStr = ip.parse_nutrition(row[attr_positions['product-nutrition']])
         if not isImg and (len(item['nutritionText']) < len(nutritionStr)):
             item['nutritionText'] = nutritionStr
-        if ip.parse_flavour(row[attr_positions['product-flavour']]) not in item['flavours']:
+        if ip.parse_flavour(row[attr_positions['product-flavour']]) not in item['flavours'] \
+                and ip.parse_flavour(row[attr_positions['product-flavour']]) is not None:
             item['flavours'].append(ip.parse_flavour(row[attr_positions['product-flavour']]))
         item['minPrice'] = min(ip.parse_price(row[attr_positions['product-price']]), item['minPrice'])
         try:
@@ -166,7 +167,7 @@ def create_document(row, attr_positions, current_shop, items):
         # Insert new item in products
 
         # 4.1 Extract information from row
-        item['allergens'] = ip.parse_allergens(row[attr_positions['product-allergens']])
+        item['allergens'] = ip.parse_allergens(row[attr_positions['product-allergens']], cid)
         item['descriptionLong'] = ip.parse_description_long(row[attr_positions['product-description-long']])
         try:
             item['descriptionShort'] = ip.parse_description_short(row[attr_positions['product-description-short']])
