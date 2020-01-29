@@ -93,7 +93,7 @@ def parse_name(name: str):
 # Checks if allergen is url.
 # If yes => Return that url right back as string.
 # If no => Check if allergens are in that nutrition string and return list of found allergens.
-def parse_allergens(allergen_string: str, cid: str):
+def parse_allergens(allergen_string: str, cids: str):
     # Validator that checks if allergen string is a valid url
     val = URLValidator()
 
@@ -122,39 +122,42 @@ def parse_allergens(allergen_string: str, cid: str):
         # Array of found allergens to be returned
         allergens = []
 
-        # Check which of the allergens are in allergen string
-        if 'ei ' in allergen_string or cid in ['c2012']:
-            # Products in category eiproteine all have allergen ei
-            allergens.append('Ei')
-        if 'erdn' in allergen_string:
-            allergens.append('Erdnüsse')
-        if 'fisch' in allergen_string:
-            allergens.append('Fisch')
-        if 'gluten' in allergen_string or 'weiz' in allergen_string or 'hafer' in allergen_string:
-            allergens.append('Gluten')
-        if 'krebs' in allergen_string:
-            allergens.append('Krebstiere')
-        if 'lupine' in allergen_string:
-            allergens.append('Lupine')
-        if 'milch' in allergen_string or 'molke' in allergen_string or 'laktos' in allergen_string \
-                or 'lactos' in allergen_string or cid in ['c2002', 'c2003', 'c2004']:
-            # Products in category milchproteine all have allergen milk
-            allergens.append('Milch')
-        if 'schalenfr' in allergen_string:
-            allergens.append('Schalenfrüchte')
-        if 'schwefel' in allergen_string:
-            allergens.append('Schwefeloxid')
-        if 'sellerie' in allergen_string:
-            allergens.append('Sellerie')
-        if 'senf' in allergen_string:
-            allergens.append('Senf')
-        if 'sesam' in allergen_string:
-            allergens.append('Sesam')
-        if 'soja' in allergen_string or cid in ['c2006']:
-            # Products in category sojaproteine all have allergen soja
-            allergens.append('Soja')
-        if 'weichtier' in allergen_string:
-            allergens.append('Weichtiere')
+        # Iterate over all cid in cids
+        for cid in cids:
+
+            # Check which of the allergens are in allergen string
+            if 'ei ' in allergen_string or cid in ['c2012']:
+                # Products in category eiproteine all have allergen ei
+                allergens.append('Ei')
+            if 'erdn' in allergen_string:
+                allergens.append('Erdnüsse')
+            if 'fisch' in allergen_string:
+                allergens.append('Fisch')
+            if 'gluten' in allergen_string or 'weiz' in allergen_string or 'hafer' in allergen_string:
+                allergens.append('Gluten')
+            if 'krebs' in allergen_string:
+                allergens.append('Krebstiere')
+            if 'lupine' in allergen_string:
+                allergens.append('Lupine')
+            if 'milch' in allergen_string or 'molke' in allergen_string or 'laktos' in allergen_string \
+                    or 'lactos' in allergen_string or cid in ['c2002', 'c2003', 'c2004']:
+                # Products in category milchproteine all have allergen milk
+                allergens.append('Milch')
+            if 'schalenfr' in allergen_string:
+                allergens.append('Schalenfrüchte')
+            if 'schwefel' in allergen_string:
+                allergens.append('Schwefeloxid')
+            if 'sellerie' in allergen_string:
+                allergens.append('Sellerie')
+            if 'senf' in allergen_string:
+                allergens.append('Senf')
+            if 'sesam' in allergen_string:
+                allergens.append('Sesam')
+            if 'soja' in allergen_string or cid in ['c2006']:
+                # Products in category sojaproteine all have allergen soja
+                allergens.append('Soja')
+            if 'weichtier' in allergen_string:
+                allergens.append('Weichtiere')
 
         # Return found allergens
         return allergens
@@ -387,7 +390,7 @@ def parse_size_from_name(name: str):
     return ''
 
 
-# Parse product category.
+# Parse product categories.
 # Matches mister m categories with categories from parsed shops.
 def parse_category(product_name: str, current_shop: str, category: str):
     # Exceptions that will be ignored for upload
@@ -423,7 +426,7 @@ def parse_category(product_name: str, current_shop: str, category: str):
             or product_name.lower() == 'null' or (product_name == '') or \
             ('bundle' in product_name.lower()):
         # Category should not be matched
-        return '',  True
+        return [],  True
 
     # Check if default category can be returned.
     # E.g. if param category is "Whey Protein" than the param category can be returned as it is,
@@ -431,24 +434,27 @@ def parse_category(product_name: str, current_shop: str, category: str):
     # The plain category matchings are defined in category_matching array
     elif category.lower() in d.category_matching[current_shop].keys():
         # Category can be returned as it is
-        return d.category_matching[current_shop][category.lower()], False
+        return [d.category_matching[current_shop][category.lower()]], False
 
     # Find the right category based on the product name and the current shop.
     # Each matching uses a unique parser for the current shop.
     else:
+        # Holds all categories an item is in
+        categories = []
+
         if current_shop == 'Rockanutrition':
-            category = sp.parse_rocka(category, product_name)
+            categories = sp.parse_rocka(category, product_name)
         elif current_shop == 'Fitmart':
-            category = sp.parse_fitmart(category, product_name)
+            categories = sp.parse_fitmart(category, product_name)
         elif current_shop == 'Myprotein':
-            category = sp.parse_myprotein(category, product_name)
+            categories = sp.parse_myprotein(category, product_name)
         elif current_shop == "Zec+":
-            category = sp.parse_zecplus(category, product_name)
+            categories = sp.parse_zecplus(category, product_name)
         elif current_shop == "Weider":
-            category = sp.parse_weider(category, product_name)
+            categories = sp.parse_weider(category, product_name)
 
         # Return matched category based on product name and current shop
-        return category, False
+        return categories, False
 
 
 # Parse product url.

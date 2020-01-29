@@ -143,14 +143,26 @@ def get_shop_id(current_shop):
     return None
 
 
-# Returns cid of current item
-def get_category_id(item):
+# Returns list of cids of current item
+def get_category_ids(item):
+    # All categories the item is in
+    all_categories = []
+
     # Iterate over all categories
     for category in categories.categories:
-        # Check if category name equals parsed category name of item
-        if category['name'] == item['category']:
-            # If yes, return cid
-            return category['cid']
+
+        # Iterate over all categories an item is in
+        for cid in item['categories']:
+
+            # Check if category name equals parsed category name of item
+            if category['name'] == cid:
+                # If yes, return cid
+                all_categories.append(category['cid'])
+
+    # Check if item is in category
+    if len(all_categories) > 0:
+        # Item is in category, return all categories its in
+        return all_categories
 
     # If no category fits, return none
     return None
@@ -159,32 +171,19 @@ def get_category_id(item):
 # Check if product with url or same name already exists
 # If yes => Return this already existing item and true
 # If no => Return param item and false
-def check_if_item_exists(item, items, cid, row, attr_positions):
+def check_if_item_exists(item, items, cids, row, attr_positions):
     # Set item found initially to false
     item_found = False
 
-    # Iterate over all items that have been parsed by now
-    for i in items[cid]:
+    # Iterate over all cid in cids the item is in
+    for cid in cids:
 
-        # Check if the item name, which is parsed at this moment,
-        # equals one of the item names in the list of items which have already been parsed
-        if i['name'] == item['name']:
-            # If yes => Return this already existing item and true
+        # Iterate over all items that have been parsed by now
+        for i in items[cid]:
 
-            # Replace item
-            item = i
-
-            # Set item found to true
-            item_found = True
-
-            # Return item and true
-            return item_found, item
-
-        # Iterate over shop urls of items that have been parsed
-        for sid_to_url in i['urlsInShops']:
-
-            # Check if shop url exists already, but the name differs.
-            if sid_to_url['url'] == row[attr_positions['product-url']]:
+            # Check if the item name, which is parsed at this moment,
+            # equals one of the item names in the list of items which have already been parsed
+            if i['name'] == item['name']:
                 # If yes => Return this already existing item and true
 
                 # Replace item
@@ -195,16 +194,32 @@ def check_if_item_exists(item, items, cid, row, attr_positions):
 
                 # Return item and true
                 return item_found, item
-        else:
-            # If no match continue searching
-            continue
+
+            # Iterate over shop urls of items that have been parsed
+            for sid_to_url in i['urlsInShops']:
+
+                # Check if shop url exists already, but the name differs.
+                if sid_to_url['url'] == row[attr_positions['product-url']]:
+                    # If yes => Return this already existing item and true
+
+                    # Replace item
+                    item = i
+
+                    # Set item found to true
+                    item_found = True
+
+                    # Return item and true
+                    return item_found, item
+            else:
+                # If no match continue searching
+                continue
 
     # If no match in all parsed items, return param item and false
     return item_found, item
 
 
 # Update existing item
-def update_item(item, cid, sid, row, attr_positions):
+def update_item(item, cids, sid, row, attr_positions):
 
     # Check if allergens is instance of string.
     # Necessary because append only if allergens is list of allergens.
@@ -214,7 +229,7 @@ def update_item(item, cid, sid, row, attr_positions):
         item['allergens'] = \
             item['allergens'] + \
             list(
-                set(ip.parse_allergens(row[attr_positions['product-allergens']], cid)) -
+                set(ip.parse_allergens(row[attr_positions['product-allergens']], cids)) -
                 set(item['allergens'])
             )
 
@@ -294,6 +309,15 @@ def update_item(item, cid, sid, row, attr_positions):
         # Get size from name
         item['minSize'] = ip.parse_size_from_name(row[attr_positions['product-name']])
 
+    # Iterate over all cid in cids the item is in
+    for cid in cids:
+        # Check if cid does not exist in categories of already existing item
+        if cid not in item['categories']:
+            # Cid does not exist in already existing item
+
+            # Append cid to category list of already existing item
+            item['categories'].append(cid)
+
     # Check if current shop of item does not exist in shop list of already existing item
     if sid not in item['shops']:
         # Shop does not exist in already existing item
@@ -307,10 +331,10 @@ def update_item(item, cid, sid, row, attr_positions):
 
 
 # Insert new item into items
-def insert_item(item, items, cid, sid, current_shop, row, attr_positions):
+def insert_item(item, items, cids, sid, current_shop, row, attr_positions):
 
     # Parse allergens and set to allergens property
-    item['allergens'] = ip.parse_allergens(row[attr_positions['product-allergens']], cid)
+    item['allergens'] = ip.parse_allergens(row[attr_positions['product-allergens']], cids)
 
     # Parse description long and set to description long property
     item['descriptionLong'] = ip.parse_description_long(row[attr_positions['product-description-long']])
@@ -368,6 +392,9 @@ def insert_item(item, items, cid, sid, current_shop, row, attr_positions):
     # TODO: Insert most popular items into category "Beliebteste"
     item['popularity'] = 1
 
+    # Append current category if to categories property
+    item['categories'] = cids
+
     # Append current shop id to shops property
     item['shops'].append(sid)
 
@@ -377,8 +404,10 @@ def insert_item(item, items, cid, sid, current_shop, row, attr_positions):
     # Append product url in shop id ito urls in shops property
     item['urlsInShops'].append({'sid': sid, 'url': ip.parse_url(row[attr_positions['product-url']])})
 
-    # Add item to products
-    items[cid].append(item)
+    # Iterate over all cid in cids to append item to every category its in
+    for cid in cids:
+        # Add item to products
+        items[cid].append(item)
 
 
 # Creates item which will be inserted into items dictionary
@@ -387,7 +416,7 @@ def create_document(row, attr_positions, current_shop, items):
     # Item schema
     item = {'iid': '', 'name': '', 'allergens': [], 'averageBewertung': 0.0, 'descriptionLong': '',
             'descriptionShort': '', 'flavours': [], 'img': '', 'nutritionImg': '', 'nutritionText': '', 'minPrice': '',
-            'minSize': '', 'popularity': 1, 'shops': [], 'category': '', 'bewertungen': [], 'pricesInShops': [],
+            'minSize': '', 'popularity': 1, 'shops': [], 'categories': [], 'bewertungen': [], 'pricesInShops': [],
             'urlsInShops': []}
 
     # 1. Get shop id of current shop
@@ -397,8 +426,10 @@ def create_document(row, attr_positions, current_shop, items):
     item['name'] = ip.parse_name(row[attr_positions['product-name']])
 
     # 3. Get item category from row
-    item['category'], dont_upload = ip.parse_category(item['name'], current_shop,
-                                                      row[attr_positions['product-category']])
+    item['categories'], dont_upload = ip.parse_category(item['name'], current_shop,
+                                                        row[attr_positions['product-category']])
+    if len(item['categories']) > 1:
+        print(item['categories'])
 
     # 4. Check if item shouldn't be uploaded.
     #    This is determined in the item parser for category.
@@ -407,21 +438,20 @@ def create_document(row, attr_positions, current_shop, items):
         return
 
     # 5. Get category id
-    cid = get_category_id(item)
-    item['category'] = cid
+    cids = get_category_ids(item)
 
     # 6. Check if product with url or same name already exists
-    item_found, item = check_if_item_exists(item, items, cid, row, attr_positions)
+    item_found, item = check_if_item_exists(item, items, cids, row, attr_positions)
 
     # 7. Check if another version of the item was parsed previously
     if item_found:
 
         # 8. item exists in items => only update certain fields
-        update_item(item, cid, sid, row, attr_positions)
+        update_item(item, cids, sid, row, attr_positions)
 
     else:
         # 9. item doenn't exist in items => insert new item in items
-        insert_item(item, items, cid, sid, current_shop, row, attr_positions)
+        insert_item(item, items, cids, sid, current_shop, row, attr_positions)
 
     # 10. Print out created document
     print("Created document: " + str(item))

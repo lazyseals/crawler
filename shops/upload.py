@@ -24,7 +24,7 @@ def get_collection(database="shops"):
 def update_collection(col):
     # update if document exists
     print("### UPDATE ###")
-    for shop in shops.shops:
+    for shop in shops:
         col.update_one({'sid': shop['sid']}, {"$set": shop}, upsert=True)
         # Product exists in DB
         print("Successfully Updated " + str(shop))

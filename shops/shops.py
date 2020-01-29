@@ -60,5 +60,18 @@ shops = [
         'shippingFree': 50,
         'deliveryTime': '1-2 Tage',
         'affiliateLink': ''
+    },
+    {
+        'sid': 's1007',
+        'name': 'Amazon',
+        'img': 'https://www.amazon.de/gp/redirect.html/ref=amb_link_3?location=https://images-eu.ssl-images-amazon.com/'
+               'images/G/03/misc/xsite/logos/a.de_logo_RGB_online_weiss.jpg&token=26537A9F278CAA96CF2FDD270EEB73D4BBD68'
+               '2E3&source=standards&pf_rd_m=A3JWKAKR8XB7XF&pf_rd_s=center-2&pf_rd_r=E0B6C11MY7FDZXN4X4JH&pf_rd_r=E0B6C'
+               '11MY7FDZXN4X4JH&pf_rd_t=1401&pf_rd_p=fefcfdb9-d469-4852-914e-df16a9be0f8a&pf_rd_p=fefcfdb9-d469-4852-91'
+               '4e-df16a9be0f8a&pf_rd_i=1000178743',
+        'shipping': 3.99,
+        'shippingFree': 29,
+        'deliveryTime': '1-2 Tage',
+        'affiliateLink': ''
     }
 ]

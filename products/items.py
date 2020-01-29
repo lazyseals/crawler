@@ -114,7 +114,8 @@ category_bodyandfit = {
     "pflanzliche nahrungsergänzung": "Pflanzliche Nahrungsergänzungsmittel",
     "enzyme": "Enzyme",
     "glucosamin": "Glucosamin",
-    "mahlzeitersetzende shakes": "Mahlzeitenersatz-Shakes"
+    "mahlzeitersetzende shakes": "Mahlzeitenersatz-Shakes",
+    "isotonische getränke": "Isotonische Getränke"
 }
 
 # Rockanutrition category name to mister m category name
