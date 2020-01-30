@@ -131,16 +131,16 @@ def create_document_positions(row):
 
 
 # Returns sid of current shop
-def get_shop_id(current_shop):
+def get_shop_id_and_popularity(current_shop):
     # Iterate over all shops
     for shop in shops.shops:
         # Check if shop name equals the current shop
         if shop['name'] == current_shop:
             # If yes, return sid
-            return shop['sid']
+            return shop['sid'], shop['popularity']
 
     # If no shop fits, return none
-    return None
+    return None, None
 
 
 # Returns list of cids of current item
@@ -287,13 +287,6 @@ def update_item(item, cids, sid, row, attr_positions):
         # Length of current item text is longer => Set text to current item text
         item['nutritionText'] = nutrition_str
 
-    # Check, if parsed flavour of current item is not contained in flavour list of already existing item.
-    # Check also, if the parsed flavour is not None.
-    if ip.parse_flavour(row[attr_positions['product-flavour']]) not in item['flavours'] \
-            and ip.parse_flavour(row[attr_positions['product-flavour']]) is not None:
-        # New flavour detected => Append to existing flavours
-        item['flavours'].append(ip.parse_flavour(row[attr_positions['product-flavour']]))
-
     # Assign the minimum price of the already exiting item and the current item to min price
     item['minPrice'] = min(ip.parse_price(row[attr_positions['product-price']]), item['minPrice'])
 
@@ -318,6 +311,13 @@ def update_item(item, cids, sid, row, attr_positions):
             # Append cid to category list of already existing item
             item['categories'].append(cid)
 
+    # Check, if parsed flavour of current item is not contained in flavour list of already existing item.
+    # Check also, if the parsed flavour is not None.
+    if ip.parse_flavour(row[attr_positions['product-flavour']]) not in item['flavours'] \
+            and ip.parse_flavour(row[attr_positions['product-flavour']]) is not None:
+        # New flavour detected => Append to existing flavours
+        item['flavours'].append(ip.parse_flavour(row[attr_positions['product-flavour']]))
+
     # Check if current shop of item does not exist in shop list of already existing item
     if sid not in item['shops']:
         # Shop does not exist in already existing item
@@ -328,10 +328,26 @@ def update_item(item, cids, sid, row, attr_positions):
         item['pricesInShops'].append({'sid': sid, 'price': ip.parse_price(row[attr_positions['product-price']])})
         # Append product url and shop id to prices in shops of already existing item
         item['urlsInShops'].append({'sid': sid, 'url': ip.parse_url(row[attr_positions['product-url']])})
+        # Parse flavours and append flavours list and shop id to flavours in shops property
+        item['flavoursInShops'].append({'sid': sid,
+                                        'flavours': [ip.parse_flavour(row[attr_positions['product-flavour']])]})
+    else:
+        # Shop exists in already existing item
+
+        # Find current shop flavours
+        for shop_flavour in item['flavoursInShops']:
+            if shop_flavour['sid'] == sid:
+
+                # Check, if parsed flavour of current item is not contained in flavour list of already existing item.
+                # Check also, if the parsed flavour is not None.
+                if ip.parse_flavour(row[attr_positions['product-flavour']]) not in shop_flavour['flavours'] \
+                        and ip.parse_flavour(row[attr_positions['product-flavour']]) is not None:
+                    # New flavour detected => Append to existing flavours
+                    shop_flavour['flavours'].append(ip.parse_flavour(row[attr_positions['product-flavour']]))
 
 
 # Insert new item into items
-def insert_item(item, items, cids, sid, current_shop, row, attr_positions):
+def insert_item(item, items, cids, sid, current_shop, row, attr_positions, popularity):
 
     # Parse allergens and set to allergens property
     item['allergens'] = ip.parse_allergens(row[attr_positions['product-allergens']], cids)
@@ -390,7 +406,7 @@ def insert_item(item, items, cids, sid, current_shop, row, attr_positions):
     #  1. If affiliate program available and
     #  2. How often a product has been bought
     # TODO: Insert most popular items into category "Beliebteste"
-    item['popularity'] = 1
+    item['popularity'] = popularity
 
     # Append current category if to categories property
     item['categories'] = cids
@@ -403,6 +419,9 @@ def insert_item(item, items, cids, sid, current_shop, row, attr_positions):
 
     # Append product url in shop id ito urls in shops property
     item['urlsInShops'].append({'sid': sid, 'url': ip.parse_url(row[attr_positions['product-url']])})
+
+    # Parse flavours and append flavours list and shop id to flavours in shops property
+    item['flavoursInShops'].append({'sid': sid, 'flavours': [ip.parse_flavour(row[attr_positions['product-flavour']])]})
 
     # Iterate over all cid in cids to append item to every category its in
     for cid in cids:
@@ -417,10 +436,10 @@ def create_document(row, attr_positions, current_shop, items):
     item = {'iid': '', 'name': '', 'allergens': [], 'averageBewertung': 0.0, 'descriptionLong': '',
             'descriptionShort': '', 'flavours': [], 'img': '', 'nutritionImg': '', 'nutritionText': '', 'minPrice': '',
             'minSize': '', 'popularity': 1, 'shops': [], 'categories': [], 'bewertungen': [], 'pricesInShops': [],
-            'urlsInShops': []}
+            'urlsInShops': [], 'flavoursInShops': []}
 
     # 1. Get shop id of current shop
-    sid = get_shop_id(current_shop)
+    sid, popularity = get_shop_id_and_popularity(current_shop)
 
     # 2. Get item name from row
     item['name'] = ip.parse_name(row[attr_positions['product-name']])
@@ -451,7 +470,7 @@ def create_document(row, attr_positions, current_shop, items):
 
     else:
         # 9. item doenn't exist in items => insert new item in items
-        insert_item(item, items, cids, sid, current_shop, row, attr_positions)
+        insert_item(item, items, cids, sid, current_shop, row, attr_positions, popularity)
 
     # 10. Print out created document
     print("Created document: " + str(item))

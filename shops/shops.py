@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Shop schema looks as follows:
-# shop = {sid, name, img, shipping, shippingFree, deliveryTime, affiliateLink}
+# shop = {sid, name, img, shipping, shippingFree, deliveryTime, affiliateLink, popularity}
 
 
 # Shops that are available in mister m webapp.
@@ -14,7 +14,8 @@ shops = [
         'shipping': 3.5,
         'shippingFree': 35,
         'deliveryTime': '2-3 Tage',
-        'affiliateLink': ''
+        'affiliateLink': '',
+        'popularity': 6
     },
     {
         'sid': 's1002',
@@ -23,7 +24,8 @@ shops = [
         'shipping': 3.9,
         'shippingFree': 75,
         'deliveryTime': '1-3 Tage',
-        'affiliateLink': ''
+        'affiliateLink': '',
+        'popularity': 5
     },
     {
         'sid': 's1003',
@@ -32,7 +34,8 @@ shops = [
         'shipping': 3.99,
         'shippingFree': 50,
         'deliveryTime': '3-4 Tage',
-        'affiliateLink': ''
+        'affiliateLink': '',
+        'popularity': 4
     },
     {
         'sid': 's1004',
@@ -41,7 +44,8 @@ shops = [
         'shipping': 4.9,
         'shippingFree': 50,
         'deliveryTime': '1-3 Tage',
-        'affiliateLink': ''
+        'affiliateLink': '',
+        'popularity': 0
     },
     {
         'sid': 's1005',
@@ -50,7 +54,8 @@ shops = [
         'shipping': 4.95,
         'shippingFree': 50,
         'deliveryTime': '1-3 Tage',
-        'affiliateLink': ''
+        'affiliateLink': '',
+        'popularity': 3
     },
     {
         'sid': 's1006',
@@ -59,7 +64,8 @@ shops = [
         'shipping': 3.9,
         'shippingFree': 50,
         'deliveryTime': '1-2 Tage',
-        'affiliateLink': ''
+        'affiliateLink': '',
+        'popularity': 2
     },
     {
         'sid': 's1007',
@@ -72,6 +78,7 @@ shops = [
         'shipping': 3.99,
         'shippingFree': 29,
         'deliveryTime': '1-2 Tage',
-        'affiliateLink': ''
+        'affiliateLink': '',
+        'popularity': 7
     }
 ]
