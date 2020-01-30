@@ -10,6 +10,9 @@ from categories import categories
 from shops import shops
 from products import item_parser as ip, items as d
 
+# Global property max most popular items
+max_popular = 60
+
 
 # Parse item information from scraped csv shop data files.
 # Creates item which will be inserted into items into appropriate category.
@@ -427,6 +430,17 @@ def insert_item(item, items, cids, sid, current_shop, row, attr_positions, popul
     for cid in cids:
         # Add item to products
         items[cid].append(item)
+
+    # Append to most popular items
+    global max_popular
+    # 1. Insert into c1001
+    items['c1001'].append(item)
+    # 2. Sort c1001 by item popularity
+    items['c1001'] = sorted(items['c1001'], key=lambda k: k['popularity'], reverse=True)
+    # 3. Check if length is greater than max popular
+    if len(items['c1001']) > max_popular:
+        # 4. Remove last item
+        del items['c1001'][-1]
 
 
 # Creates item which will be inserted into items dictionary
