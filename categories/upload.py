@@ -24,7 +24,7 @@ def get_collection(database="categories"):
 def update_collection(col):
     # update if document exists
     print("### UPDATE ###")
-    for category in categories.categories:
+    for category in categories:
         col.update_one({'cid': category['cid']}, {"$set": category}, upsert=True)
         # Product exists in DB
         print("Successfully Updated " + str(category))

@@ -56,16 +56,10 @@ def fetch_items_and_highest_iid():
             cursor = col.find()
             for document in cursor:
                 # Item schema
-                item = {'iid': document['iid'], 'name': document['name'], 'allergens': document['allergens'],
-                        'averageBewertung': document['averageBewertung'],
-                        'descriptionLong': document['descriptionLong'],
-                        'descriptionShort': document['descriptionShort'], 'flavours': document['flavours'],
-                        'img': document['img'], 'nutritionImg': document['nutritionImg'],
-                        'nutritionText': document['nutritionText'], 'minPrice': document['minPrice'],
-                        'minSize': document['minSize'], 'popularity': document['popularity'],
-                        'shops': document['shops'], 'category': document['category'],
-                        'bewertungen': document['bewertungen'], 'pricesInShops': document['pricesInShops'],
-                        'urlsInShops': document['urlsInShops']}
+                item = {'iid': '', 'name': '', 'allergens': [], 'averageBewertung': 0.0, 'descriptionLong': '',
+                        'descriptionShort': '', 'flavours': [], 'img': '', 'nutritionImg': '', 'nutritionText': '',
+                        'minPrice': '', 'minSize': '', 'popularity': 1, 'shops': [], 'categories': [],
+                        'bewertungen': [], 'pricesInShops': [], 'urlsInShops': [], 'flavoursInShops': []}
                 item_list.append(item)
         except StopIteration:
             print('Empty Cursor!')

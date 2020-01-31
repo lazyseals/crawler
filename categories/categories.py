@@ -530,6 +530,11 @@ categories = [
         'main': True,
         'subCategories': []
     },  {
+        'cid': 'c5006',
+        'name': 'Smoothies',
+        'main': True,
+        'subCategories': []
+    },  {
         'cid': 'c1001',
         'name': 'Beliebteste',
         'main': True,
