@@ -6,6 +6,7 @@ from pymongo import MongoClient
 import os
 
 from categories import categories
+from products import doofinder
 from products import items as d
 from products import parser as p
 
@@ -47,19 +48,30 @@ def fetch_items_and_highest_iid():
         # 3. Get collection
         col = get_collection(db, category)
         try:
-            # 4. Get highest iid
-            col_iid = col.find().sort([('iid', -1)]).limit(1).next()['iid'][-4:]
-            iid = max(iid, int(col_iid))
-            print('Highest iid: i' + str(iid))
-
             # 5. Get items from category
             cursor = col.find()
             for document in cursor:
                 # Item schema
-                item = {'iid': '', 'name': '', 'allergens': [], 'averageBewertung': 0.0, 'descriptionLong': '',
-                        'descriptionShort': '', 'flavours': [], 'img': '', 'nutritionImg': '', 'nutritionText': '',
-                        'minPrice': '', 'minSize': '', 'popularity': 1, 'shops': [], 'categories': [],
-                        'bewertungen': [], 'pricesInShops': [], 'urlsInShops': [], 'flavoursInShops': []}
+                item = {'iid': document['iid'],
+                        'name': document['name'],
+                        'allergens': document['allergens'],
+                        'averageBewertung': document['averageBewertung'],
+                        'descriptionLong': document['descriptionLong'],
+                        'descriptionShort': document['descriptionShort'],
+                        'flavours': document['flavours'],
+                        'img': document['img'],
+                        'nutritionImg': document['nutritionImg'],
+                        'nutritionText': document['nutritionText'],
+                        'minPrice': document['minPrice'],
+                        'minSize': document['minSize'],
+                        'popularity': document['popularity'],
+                        'shops': document['shops'],
+                        'categories': document['categories'],
+                        'bewertungen': document['bewertungen'],
+                        'pricesInShops': document['pricesInShops'],
+                        'urlsInShops': document['urlsInShops'],
+                        'flavoursInShops': document['flavoursInShops']}
+
                 item_list.append(item)
         except StopIteration:
             print('Empty Cursor!')
@@ -140,18 +152,37 @@ def update_file(file, update_all=False):
 
 # Updates all files in data
 def update_all_files():
+    global items
+
+    # 1. Delete old items in doofinder
+    fetch_items()
+    for category, item_list in items.items():
+        doofinder.delete_items_in_bulk(item_list)
+
+    # 2. Reset items back to empty
+    create_items()
+
+    # 3. Create new items
     dir = os.fsencode("../data")
     for file in os.listdir(dir):
         filename = os.fsdecode(file)
         if filename.endswith(".csv"):
             print("### PROCESS: " + filename + " ###")
             update_file(filename, update_all=True)
+
+    # 4. Update Mongo DB
     db = get_database()
     for category, item_list in items.items():
-        # 3. Get collection
+        # 5.1 Get collection
         col = get_collection(db, category)
-        # 4. Update collection
+        # 5.2 Update collection
         update_collection(col, item_list)
+
+    # 5. Update doofinder
+    print("### INSERT IN DOOFINDER ###")
+    for category, item_list in items.items():
+        print("Created doofinder items: ")
+        doofinder.create_items_in_bulk(item_list)
 
 
 # Prints categories which weren't parsed even they were declared to be
@@ -163,8 +194,6 @@ def print_missing_categories(shop):
 current_shop = ""
 replaced_categories = set()
 new_products = []
-
-create_items()
 
 # Methods to update
 update_all_files()

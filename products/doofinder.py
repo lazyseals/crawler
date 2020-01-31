@@ -1,4 +1,7 @@
 import requests
+import time
+
+from itertools import islice
 
 API_KEY = 'eu1-627d8304aa910e7dcee0432525ea52a73d94aea6'
 TOKEN = '627d8304aa910e7dcee0432525ea52a73d94aea6'
@@ -52,9 +55,10 @@ def get_item(item_id):
 # Notice the dynamically, read-only url field that points to the item's resource location.
 def create_item(item):
     r_url = URL + '/%s/items/product' % HASH_ID
-    r_headers = HEADERS['content-type'] = 'application/json'
+    r_headers = HEADERS
+    r_headers['content-type'] = 'application/json'
 
-    r = requests.post(url=r_url, headers=r_headers, data=item)
+    r = requests.post(url=r_url, headers=r_headers, json=item)
 
     print(r.json())
 
@@ -63,19 +67,38 @@ def create_item(item):
 # The response is, as expected, a representation of the recently created list of items.
 def create_items_in_bulk(items):
     r_url = URL + '/%s/items/product' % HASH_ID
-    r_headers = HEADERS['content-type'] = 'application/json'
+    r_headers = HEADERS
+    r_headers['content-type'] = 'application/json'
 
-    r = requests.post(url=r_url, headers=r_headers, data=items)
+    # Replace iid with id
+    for item in items:
+        item['id'] = item['iid']
+        try:
+            del item['_id']
+        except KeyError:
+            pass  # Item has been processed previously => _id is not in item anymore
 
-    print(r.json())
+    # Create items in chunks of size 100
+    for chunk in chunks(items, 100):
+        r = requests.post(url=r_url, headers=r_headers, json=chunk)
+
+        # Limit of 2 requests per seconds
+        while r.status_code == 429:
+            # Sleep 1 second if timeout limit is reached
+            time.sleep(1)
+            # Retry after 1 second
+            r = requests.post(url=r_url, headers=r_headers, json=chunk)
+
+        print(r.json())
 
 
 # Updates an existing item. If the provided {item_id} doesn't exist, a new item will be created
 def update_or_create_item(item):
     r_url = URL + '/%s/items/product/%s' % (HASH_ID, item['iid'])
-    r_headers = HEADERS['content-type'] = 'application/json'
+    r_headers = HEADERS
+    r_headers['content-type'] = 'application/json'
 
-    r = requests.put(url=r_url, headers=r_headers, data=item)
+    r = requests.put(url=r_url, headers=r_headers, json=item)
 
     print(r.json())
 
@@ -87,9 +110,10 @@ def update_or_create_item(item):
 # If not, a new item will be created.
 def update_or_create_items_in_bulk(items):
     r_url = URL + '/%s/items/product' % HASH_ID
-    r_headers = HEADERS['content-type'] = 'application/json'
+    r_headers = HEADERS
+    r_headers['content-type'] = 'application/json'
 
-    r = requests.put(url=r_url, headers=r_headers, data=items)
+    r = requests.put(url=r_url, headers=r_headers, json=items)
 
     print(r.json())
 
@@ -98,9 +122,10 @@ def update_or_create_items_in_bulk(items):
 # If the provided {item_id} doesn't exist, no action is performed.
 def partially_update_item(item):
     r_url = URL + '/%s/items/product/%s' % (HASH_ID, item['iid'])
-    r_headers = HEADERS['content-type'] = 'application/json'
+    r_headers = HEADERS
+    r_headers['content-type'] = 'application/json'
 
-    r = requests.patch(url=r_url, headers=r_headers, data=item)
+    r = requests.patch(url=r_url, headers=r_headers, json=item)
 
     print(r.json())
 
@@ -112,9 +137,10 @@ def partially_update_item(item):
 # Every other attribute an item may have beside the ones in the PATCH operation is kept
 def partially_update_items_in_bulk(items):
     r_url = URL + '/%s/items/product' % HASH_ID
-    r_headers = HEADERS['content-type'] = 'application/json'
+    r_headers = HEADERS
+    r_headers['content-type'] = 'application/json'
 
-    r = requests.patch(url=r_url, headers=r_headers, data=items)
+    r = requests.patch(url=r_url, headers=r_headers, json=items)
 
     print(r.json())
 
@@ -132,8 +158,31 @@ def delete_item(item):
 # The response contains two lists of ids: those that could be successfully deleted and those that failed.
 def delete_items_in_bulk(items):
     r_url = URL + '/%s/items/product' % HASH_ID
-    r_headers = HEADERS['content-type'] = 'application/json'
+    r_headers = HEADERS
+    r_headers['content-type'] = 'application/json'
 
-    r = requests.delete(url=r_url, headers=r_headers, data=items)
+    item_ids = []
 
-    print(r.json())
+    # Replace iid with id
+    for item in items:
+        item_id = {'id': item['iid']}
+        item_ids.append(item_id)
+
+    # Create items in chunks of size 100
+    for chunk in chunks(item_ids, 100):
+        r = requests.delete(url=r_url, headers=r_headers, json=chunk)
+
+        # Limit of 2 requests per seconds
+        while r.status_code == 429:
+            # Sleep 1 second if timeout limit is reached
+            time.sleep(1)
+            # Retry after 1 second
+            r = requests.delete(url=r_url, headers=r_headers, json=chunk)
+
+        print(r.json())
+
+
+# Generator that yields chunks of size n
+def chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
